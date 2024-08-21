@@ -16,7 +16,8 @@
 
 program Clase1MI;
 
-const dimF = 50;
+const 
+  dimF = 10;
 
 type 
     dias = 1..31;
@@ -186,23 +187,41 @@ begin
     if Cumple (v[i].codigoP) then AgregarAdelante (L, v[i]);
 end; 
 
-procedure ImprimirVenta (s: venta);
-begin 
-  writeln('-------------------------');
-  writeln('Dia: ', s.dia);
-  writeln('Código de Producto: ', s.codigoP);
-  writeln('Cantidad: ', s.cantidad);
-  writeln();
-end;
-
 
 procedure ImprimirLista (L: lista);
 begin
-  while (L <> nil) do 
-  begin 
-    ImprimirVenta(L^.dato);
+  if (L <> nil) then 
+  begin
+    writeln('   Dia  ', ' | ', ' Codigo ', ' | ', ' Cantidad ' );
+    writeln('--------------------------------');
+  end;
+
+
+  while (L <> nil) do begin 
+    if (L^.dato.dia <= 9) then
+      write('   0')
+    else
+      write('   ');
+
+    write(L^.dato.dia, '    |');
+
+    if (L^.dato.codigoP <= 9) then 
+      write('    0')
+    else 
+      write('    ');
+    write(L^.dato.codigoP, '    |');
+
+    if (L^.dato.cantidad <= 9) then 
+      write('     0')
+    else 
+      write('      ');
+    write(L^.dato.cantidad);
+
+    writeln;
+
     L := L^.sig;
   end;
+  writeln;
 end;
 
 var v: vector;
@@ -223,7 +242,7 @@ Begin
                        writeln;
                        Ordenar (v, dimL);
                        ImprimirVector (v, dimL);
-                       {write ('Ingrese valor inferior: ');
+                       write ('Ingrese valor inferior: ');
                        readln (valorInferior);
                        write ('Ingrese valor superior: ');
                        readln (valorSuperior);
@@ -242,7 +261,7 @@ Begin
                                                                 writeln;
                                                                 ImprimirLista (L);
                                                               end;
-                                          end;}
+                                          end;
                       end;
                        
 end.

@@ -10,3 +10,31 @@
     oficina.
     c. Ordene el vector aplicando el método de selección, por código de identificación de la oficina.
 }
+
+program ej2;
+uses crt, sysutils;
+
+procedure TableHeader();
+begin
+  writeln('      '#201);
+  writeln('  Dia '#186);
+  writeln('Cod.P '#186);
+  writeln(' Cant '#186);
+  writeln('      '#200);
+end;
+
+procedure TableFooter();
+begin
+  //gotoXY(WhereX + 7, WhereY - 5);
+  writeln(Char(187));
+  writeln(Char(186));
+  writeln(Char(186));
+  writeln(Char(186));
+  writeln(Char(188));
+end;
+
+begin
+  TableHeader();
+  TableFooter();
+
+end.
