@@ -3,7 +3,45 @@ Const dimF = 200;
 type 
     vector = array [1..dimF] of integer;
 
+
+
+{ Agrega un nodo a la lista }
+procedure agregarAdelante(var l:lista; a:alumno);
+var
+    nue: lista;
+
+begin
+    new(nue);
+    nue^.alu := a;
+    nue^.sig := l;
+    l := nue;
+end;
+
+procedure agregarAlFinal(var l:lista; p: prestamo);
+var 
+    nue, aux: lista;
+begin 
+
+    new(nue);
+    nue^.elem := p;
+    nue^.sig := nil;
+
+    if ( l = nil) then
+        l := nue
+    else 
+    begin
+        aux := l;
+
+        while (aux^.sig <> nil) do 
+            aux := aux^.sig;
+        
+        aux^.sig := nue;
+    end;
+end;
+
+
 {
+    ALGORITMOS DE ORDENAMIENTO
     Consideraciones:
     - T de ejecución:               N**2
     - Facilidad de escritura:       Muy fácil

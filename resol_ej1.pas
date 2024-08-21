@@ -20,8 +20,9 @@ const dimF = 50;
 
 type 
     dias = 1..31;
-    rango1 = 0..15;
-    rango2 = 1..99;
+
+    rango1 = 0..15;     // Código de producto
+    rango2 = 1..99;     // Cantidad vendida
     rango3 = 0..dimF;
      
     venta = record
@@ -30,6 +31,7 @@ type
 			cantidad: rango2;
 		end;
 
+    { Vector de ventas de un comercio }
 	  vector = array [1..dimF] of venta;
 
 	  lista = ^nodo;
@@ -38,6 +40,7 @@ type
         sig: lista;
 	  end;
 
+{ Carga la información de la venta de productos en el vector }
 procedure AlmacenarInformacion (var v: vector; var dimL: rango3);
   
   procedure LeerVenta (var v: venta);
@@ -46,6 +49,7 @@ procedure AlmacenarInformacion (var v: vector; var dimL: rango3);
     write ('Dia: ');
     v.dia:= random(32);
     writeln (v.dia);
+
     if (v.dia <> 0)
     then begin
         write ('Codigo de producto: ');
@@ -98,8 +102,8 @@ begin
      writeln;
 End;
 
-procedure Ordenar (var v: vector; dimL: rango3);
 
+procedure Ordenar (var v: vector; dimL: rango3);
 var i, j, pos: rango3; item: venta;	
 		
 begin
@@ -115,6 +119,8 @@ begin
    v[i] := item;
  end;
 end;
+
+{ Elimina del vector los productos entre los codigos inf y sup }
 procedure Eliminar (var v: vector; var dimL: rango3; valorInferior, valorSuperior: rango1);
 
   function BuscarPosicion (v: vector; dimL: rango3; elemABuscar: rango1): rango3;
@@ -140,23 +146,37 @@ Begin
   posInferior:= BuscarPosicion (v, dimL, valorInferior);
   if (posInferior <> 0)
   then begin
-         posSuperior:= BuscarPosicionDesde (v, dimL, posInferior, valorSuperior);
+          posSuperior:= BuscarPosicionDesde (v, dimL, posInferior, valorSuperior);
          
-         {Escribir el código correspondiente para hacer el corrimiento y disminuir la dimensión lógica}
-         
+          // Corro todos los elementos desde posSuperior + 1 ( o posSuperior si llegue al fin) hasta posInferior
+          salto := posSuperior - posInferior;
+          if (posSuperior <= dimL) then
+          begin 
+            for i := posSuperior + 1 to dimL do
+              v[i - salto] := v[i];
+
+          end; 
+
+          // Calculo los elementos 'eliminados' y actualizo dimL
+          dimL := dimL - salto;
        end;
 end;
 
 procedure GenerarLista (v: vector; dimL: rango3; var L: lista);
 
   procedure AgregarAdelante (var L: lista; elem: venta);
+  var 
+    nue: lista;
   begin
-    { Completar }
+    new (nue);
+    nue^.dato := elem;
+    nue^.sig := l;
+    l := nue;
   end;
   
   function Cumple (num: rango1): boolean;
   begin
-    { Completar }
+    Cumple := (num MOD 2 = 0);
   end;
   
 var i: rango3; 
@@ -166,9 +186,23 @@ begin
     if Cumple (v[i].codigoP) then AgregarAdelante (L, v[i]);
 end; 
 
+procedure ImprimirVenta (s: venta);
+begin 
+  writeln('-------------------------');
+  writeln('Dia: ', s.dia);
+  writeln('Código de Producto: ', s.codigoP);
+  writeln('Cantidad: ', s.cantidad);
+  writeln();
+end;
+
+
 procedure ImprimirLista (L: lista);
 begin
- { Completar }
+  while (L <> nil) do 
+  begin 
+    ImprimirVenta(L^.dato);
+    L := L^.sig;
+  end;
 end;
 
 var v: vector;
