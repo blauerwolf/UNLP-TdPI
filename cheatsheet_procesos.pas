@@ -4,7 +4,7 @@ type
     vector = array [1..dimF] of integer;
 
 
-
+// OPERACIONES SOBRE VECTORES
 { Agrega un nodo a la lista }
 procedure agregarAdelante(var l:lista; a:alumno);
 var
@@ -37,6 +37,68 @@ begin
         
         aux^.sig := nue;
     end;
+end;
+
+// OPERACIONES SOBRE LISTAS
+{ Agregar un nodo al final de la lista }
+procedure agregarAlFinal(var l:lista; dni: integer);
+var 
+    nue, aux: lista;
+begin 
+
+    new(nue);
+    nue^.cli.dni := dni;
+    nue^.sig := nil;
+
+    if ( l = nil) then
+    begin 
+        nue^.cli.cod := 1;
+        l := nue;
+    end 
+    else 
+    begin
+        aux := l;
+
+        while (aux^.sig <> nil) do 
+            aux := aux^.sig;
+        
+        nue^.cli.cod := aux^.cli.cod + 1;
+        aux^.sig := nue;
+    end;
+end;
+
+
+procedure InsertarOrdenado(var l: lista; v: viaje);
+var 
+  actual, anterior, nuevo: lista;
+
+begin 
+  new(nuevo);
+  nuevo^.trip := v;
+  nuevo^.sig := nil;
+
+  if (l = nil) then 
+    l := nuevo
+  else begin 
+    anterior := l;
+    actual := l;
+
+    while (actual <> nil) and (actual^.trip.codigoAlumno < nuevo^.trip.codigoAlumno) do 
+    begin 
+      anterior := actual;
+      actual := actual^.sig;
+    end;
+
+    if (actual = l) then 
+    begin 
+      nuevo^.sig := l;
+      l := nuevo;
+    end 
+    else begin 
+      anterior^.sig := nuevo;
+      nuevo^.sig := actual;
+    end;
+  end;
 end;
 
 
