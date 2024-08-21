@@ -26,6 +26,7 @@
 program ej4;
 const
 	rango = 1..8;
+	dimF = 30;
 type
 
 
@@ -34,6 +35,15 @@ type
 		rubro: rango;
 		precio: real;
 	end;
+	
+	lista = ^nodo;
+	
+	nodo = record
+		elem: producto;
+		sig: lista;
+	end;
+	
+	vectorRubro3 = array[1..dimF] of producto;
 	
 	
 procedure LeerProducto(var p: producto);
@@ -44,6 +54,17 @@ begin
 		write('Precio: ');	readln(p.precio);
 	end;
 	writeln;
+end;
+
+procedure InicializarLista(var l: lista);
+begin
+	l := nil;
+end;
+
+procedure CargarProductos(var l: lista);
+var p: producto;
+begin
+	
 end;
 
 
