@@ -21,3 +21,41 @@
     f. Calcule el promedio de los precios del vector resultante del punto d).
 
 }
+
+
+program ej4;
+const
+	rango = 1..8;
+type
+
+
+	producto = record
+		id: integer;
+		rubro: rango;
+		precio: real;
+	end;
+	
+	
+procedure LeerProducto(var p: producto);
+begin 
+	write('Codigo: '); readln(p.id);
+	if (p.precio <> 0 ) then begin
+		write('rubro: ');	readln(p.rubro);
+		write('Precio: ');	readln(p.precio);
+	end;
+	writeln;
+end;
+
+
+var
+
+Begin
+	CargarProductos();
+	ImprimirCodigosPorRubro();
+	GenerarVector();
+	Ordenar();
+	ImprimirPrecios();
+	CalcularPromedio();
+End.
+		
+
