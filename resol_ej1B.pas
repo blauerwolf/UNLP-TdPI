@@ -14,31 +14,33 @@ h. Un módulo que muestre la información obtenida en el punto g).
 
 program Clase1MI;
 
-const dimF = 50;
+const dimF = 20;
 
-type dias = 0..31;
-     rango1 = 0..15;
-     rango2 = 1..99;
-     rango3 = 0..dimF;
+type 
 
-     venta = record
-                dia: dias;
-				codigoP: rango1;
-				cantidad: rango2;
-			 end;
+  dias = 0..31;
+  rango1 = 0..15;
+  rango2 = 1..99;
+  rango3 = 0..dimF;
 
-	 vector = array [1..dimF] of venta;
+  venta = record
+    dia: dias;
+	  codigoP: rango1;
+		cantidad: rango2;
+	end;
 
-	 elemento = record
-	              codigoP: rango1;
-	              cantTotal: integer;
-	            end;
+	vector = array [1..dimF] of venta;
+
+  elemento = record
+    codigoP: rango1;
+    cantTotal: integer;
+  end;
                 
-	 lista = ^nodo;
-	 nodo = record
-	          dato: elemento;
-	          sig: lista;
-	        end;
+	lista = ^nodo;
+	nodo = record
+	  dato: elemento;
+	  sig: lista;
+	end;
 
 procedure AlmacenarInformacion (var v: vector; var dimL: rango3);
   
@@ -145,7 +147,6 @@ Begin
     then begin
         posSuperior:= BuscarPosicionDesde (v, dimL, posInferior, valorSuperior);
          
-        {Escribir el código correspondiente para hacer el corrimiento y disminuir la dimensión lógica}
         salto := posSuperior - posInferior;
         if (posSuperior <= dimL) then
         begin 
@@ -161,9 +162,21 @@ end;
 
 procedure GenerarLista (v: vector; dimL: rango3; var L: lista);
 
-    procedure AgregarAtras (var L, ult: lista; elem: elemento);
-    begin
+    procedure agregarAtras(var L, ULT: lista; elem: elemento);
+    var 
+      nue: lista;
 
+    Begin 
+      new (nue);              { Creo el nodo }
+      nue^.dato := elem;      { Cargo el dato }
+      nue^.sig := nil;        { Inicializo enlace en nil }
+
+      if (L = nil) then   { Si la lista está vacía }
+        L := nue          { Actualizo el inicio }
+      else                { si la lista no está vacía }
+        ULT^.sig := nue;  { Realizo enlace con el último }
+      
+      ULT := nue;         { Actualizo el último }
     end;
   
     
@@ -188,18 +201,12 @@ procedure ImprimirLista (L: lista);
 begin
     if (L <> nil) then 
     begin
-        writeln('   Dia  ', ' | ', ' Codigo ', ' | ', ' Cantidad ' );
-        writeln('--------------------------------');
+        writeln(' Codigo ', ' | ', ' Cantidad ' );
+        writeln('----------------------');
     end;
 
 
   while (L <> nil) do begin 
-    if (L^.dato.dia <= 9) then
-      write('   0')
-    else
-      write('   ');
-
-    write(L^.dato.dia, '    |');
 
     if (L^.dato.codigoP <= 9) then 
       write('    0')
@@ -207,11 +214,11 @@ begin
       write('    ');
     write(L^.dato.codigoP, '    |');
 
-    if (L^.dato.cantidad <= 9) then 
+    if (L^.dato.cantTotal < 10 ) then 
       write('     0')
     else 
-      write('      ');
-    write(L^.dato.cantidad);
+      write('     ');
+    write(L^.dato.cantTotal);
 
     writeln;
 
