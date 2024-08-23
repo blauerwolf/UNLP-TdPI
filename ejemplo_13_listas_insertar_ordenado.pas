@@ -13,27 +13,6 @@ type
     sig: lista;
   end;
 
-
-procedure leerJugador(var j: jugador);
-begin 
-  write('DNI: '); readln(j.dni);
-  write('Nombre y Apellido: '); readln(j.nomyAp);
-  write('Altura: '); readln(j.altura);
-  writeln;
-end;
-
-
-procedure cargarLista(var L: lista);
-var j: jugador;
-
-Begin
-  leerJugador(j);
-  while(j.dni <> 0) do begin 
-    insertarOrdenado(J, j);
-    leerJugador(j);
-  end;
-end;
-
 procedure insertarOrdenado(var L: lista; j: jugador);
 var 
   nue: lista;
@@ -59,6 +38,26 @@ begin
     ant^.sig := nue;
 
   nue^.sig := act;
+end;
+
+procedure leerJugador(var j: jugador);
+begin 
+  write('DNI: '); readln(j.dni);
+  write('Nombre y Apellido: '); readln(j.nomyAp);
+  write('Altura: '); readln(j.altura);
+  writeln;
+end;
+
+
+procedure cargarLista(var L: lista);
+var j: jugador;
+
+Begin
+  leerJugador(j);
+  while(j.dni <> 0) do begin 
+    insertarOrdenado(J, j);
+    leerJugador(j);
+  end;
 end;
 
 

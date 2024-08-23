@@ -1,3 +1,4 @@
+{ Algoritmo de ordenamiento seleccion }
 program ordenamos;
 const 
   tam = 150;
