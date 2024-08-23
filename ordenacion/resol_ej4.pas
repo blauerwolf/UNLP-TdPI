@@ -94,7 +94,7 @@ begin
 		InicializarLista(v[i]);
 end;
 
-procedure CargarProductos(var l: lista);
+procedure CargarProductos(var vP: vectorProductos);
 var p: producto;
 begin
 	LeerProducto(p);
@@ -134,27 +134,59 @@ begin
 	end;
 end;
 
-procedure GenerarVector(var vR3: vectorRubro3; var dimL: integer);
+procedure GenerarVector(L: lista; var vR3: vectorRubro3; var dimL: integer);
 var i: integer;
 begin
+	dimL := 0;
 
+	while (L <> nil) and (dimL < 30) do begin
+		dimL := dimL + 1;
+		vR3[dimL] := L^.dato;
+
+		L := L^.sig;
+	end;
+end;
+
+procedure Ordenar(var v: vectorRubro3; dimLog: integer);
+var 
+    i, j, actual: integer;
+
+begin 
+    for i := 2 to dimLog do begin
+        actual := v[i];
+        j := i - 1;
+
+        while (j > 0) and (v[j] > actual) do 
+        begin 
+            v[j + 1] := v[j];
+            j := j - 1;
+        end;
+
+        v[j + 1] := actual;
+    end;
 end;
 
 
 var
 	vP: vectorProductos;
+	vR3: vectorRubro3;
+	dimL: integer;
 Begin
 	{ Inicializo el vector de listas de productos por rubro }
 	InicializarVectorProductos(vP);
 
 	{ Cargo los productos mientras el precio sea <> 0 }
-	CargarProductos();
+	CargarProductos(vP);
 
 	{ b: Imprimi los códigos de los productos por cada rubro }
-	ImprimirCodigosPorRubro();
+	ImprimirCodigosPorRubro(vP);
 
-	GenerarVector();
-	Ordenar();
+	{ c: Genero el vector con el rubro 3 }
+	GenerarVector(vP[3], vR3, dimL);
+
+	{ d: Ordeno el vector por precios }
+	Ordenar(vR3, dimL);
+
 	ImprimirPrecios();
 	CalcularPromedio();
 End.
