@@ -27,9 +27,8 @@ program ej4;
 const
 	rango = 1..8;
 	dimF = 30;
+
 type
-
-
 	producto = record
 		id: integer;
 		rubro: rango;
@@ -43,8 +42,35 @@ type
 		sig: lista;
 	end;
 	
+	vectorProductos = array[rango] of lista;
 	vectorRubro3 = array[1..dimF] of producto;
-	
+
+procedure insertarOrdenado(var L: lista; elem: producto);
+var 
+  nue: lista;
+  act, ant: lista;          { Puntaros auxiliares para recorrido }
+
+begin 
+  { Crear el nodo a insertar }
+  new (nue);
+  nue^.dato := elem;
+  act := L;                 { Ucibo act y ant al inicio de la lista }
+  ant := L;
+
+  { Buscar la posición para insertar el nodo creado }
+  while (act <> nil) and (elem.id > act^.dato.id) do 
+  begin 
+    ant := act;
+    act := act^.sig;
+  end;
+
+  if (act = ant) then     { al inicio o lista vacía }
+    L := nue
+  else                    { al medio o al final }
+    ant^.sig := nue;
+
+  nue^.sig := act;
+end;	
 	
 procedure LeerProducto(var p: producto);
 begin 
@@ -61,18 +87,72 @@ begin
 	l := nil;
 end;
 
+procedure InicializarVectorProductos(var v: vectorProductos);
+var i: integer;
+begin
+	for i := 1 to 8 do 
+		InicializarLista(v[i]);
+end;
+
 procedure CargarProductos(var l: lista);
 var p: producto;
 begin
-	
+	LeerProducto(p);
+
+	while (p.precio <> 0) then begin 
+		{ Inserto el producto ordenado por codigo }
+		InsertarOrdenado(vP[p.rubro], p);
+
+		LeerProducto(p);
+	end;
+end;
+
+procedure ImprimirCodigosLista(L: lista);
+begin 
+	if (L = nil) then 
+		writeln('Sin resultados')
+	else begin
+		write('Códigos: [');
+
+		while (L <> nil) do begin
+			write(L^.dato.id, ', ');
+			L := L^.sig;
+		end;
+
+		write(']');
+	end;
+end;
+
+procedure ImprimirCodigosPorRubro(vP: vectorProductos);
+var i: integer;
+begin 
+	for i := 1 to 8 to begin 
+		writeln('Rubro: ', i);
+		writeln('---------');
+		ImprimirCodigosLista(vP[i]);
+		writeln;
+	end;
+end;
+
+procedure GenerarVector(var vR3: vectorRubro3; var dimL: integer);
+var i: integer;
+begin
+
 end;
 
 
 var
-
+	vP: vectorProductos;
 Begin
+	{ Inicializo el vector de listas de productos por rubro }
+	InicializarVectorProductos(vP);
+
+	{ Cargo los productos mientras el precio sea <> 0 }
 	CargarProductos();
+
+	{ b: Imprimi los códigos de los productos por cada rubro }
 	ImprimirCodigosPorRubro();
+
 	GenerarVector();
 	Ordenar();
 	ImprimirPrecios();
