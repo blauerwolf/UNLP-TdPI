@@ -3,6 +3,19 @@ Const dimF = 200;
 type 
     vector = array [1..dimF] of integer;
 
+    lista = ^nodo;
+    nodo1 = record 
+      elem: alumno;
+      sig: lista;
+    end;
+
+    lista2 = ^nodo2;
+    nodo2 = record 
+      elem: alumno;
+      sig: lista2;
+      pri: lista2;
+      ult: lista2;
+
 
 // OPERACIONES SOBRE VECTORES
 { Agrega un nodo a la lista }
@@ -66,6 +79,8 @@ begin
         aux^.sig := nue;
     end;
 end;
+
+procedure AgregarAlFinal2()
 
 
 procedure InsertarOrdenado(var l: lista; v: viaje);
