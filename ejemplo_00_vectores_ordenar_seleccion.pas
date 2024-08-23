@@ -27,11 +27,20 @@ procedure llenarNumeros(var v: numeros; var dim: integer);
 var i: integer;
 begin 
   Randomize();
-  for i := 1 to dim do 
+  for i := 1 to tam do 
     v[i] := random(1000) + 1;
 
   dim := i;
     
+end;
+
+procedure  imprimirVector(v: numeros;  dimL:integer);
+var i: integer;
+begin 
+  for i := 1 to dimL do
+    write(v[i],    ' | ');
+  
+  writeln;
 end;
 
 var 
@@ -39,5 +48,11 @@ var
 
 begin 
   llenarNumeros(VN,dimL);
-  ordenar(VN, dimL);
+  writeln('Vector sin ordenar: ');
+  imprimirVector(VN, dimL);
+  Ordenar(VN, dimL);
+  writeln;
+  writeln('Vector ordenado: ');
+  imprimirVector(VN, dimL);
+  
 end.
