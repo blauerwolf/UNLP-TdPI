@@ -1,5 +1,5 @@
 program ej_agregar_final;
-
+uses sysutils;
 type 
   jugador = record 
     dni: integer;
@@ -63,7 +63,7 @@ var
   espacios, i: integer;
 begin 
   if (L <> nil) then begin
-    writeln('   DNI   |        Nombre y Apellido     |  Altura');
+    writeln('   DNI   |        Nombre y Apellido      |  Altura');
     writeln('---------------------------------------------------');
   end;
 
@@ -98,7 +98,7 @@ begin
     end else 
       write(L^.dato.nomyAp);
       
-    write('|   ', L^.dato.altura);
+    write(' |   ', L^.dato.altura);
     writeln;
 
     L := L^.sig;
