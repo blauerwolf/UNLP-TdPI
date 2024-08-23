@@ -202,7 +202,7 @@ begin
     if (L <> nil) then 
     begin
         writeln(' Codigo ', ' | ', ' Cantidad ' );
-        writeln('----------------------');
+        writeln('--------------------');
     end;
 
 
