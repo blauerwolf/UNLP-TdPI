@@ -24,11 +24,9 @@
 
 
 program ej4;
-const
-	rango = 1..8;
-	dimF = 30;
-
+const dimF = 30;
 type
+	rango = 1..8;
 	producto = record
 		id: integer;
 		rubro: rango;
@@ -53,12 +51,12 @@ var
 begin 
   { Crear el nodo a insertar }
   new (nue);
-  nue^.dato := elem;
+  nue^.elem := elem;
   act := L;                 { Ucibo act y ant al inicio de la lista }
   ant := L;
 
   { Buscar la posición para insertar el nodo creado }
-  while (act <> nil) and (elem.id > act^.dato.id) do 
+  while (act <> nil) and (elem.id > act^.elem.id) do 
   begin 
     ant := act;
     act := act^.sig;
@@ -99,7 +97,7 @@ var p: producto;
 begin
 	LeerProducto(p);
 
-	while (p.precio <> 0) then begin 
+	while (p.precio <> 0) do begin 
 		{ Inserto el producto ordenado por codigo }
 		InsertarOrdenado(vP[p.rubro], p);
 
@@ -110,38 +108,37 @@ end;
 procedure ImprimirCodigosLista(L: lista);
 begin 
 	if (L = nil) then 
-		writeln('Sin resultados')
+		writeln('Sin resultados.')
 	else begin
-		write('Códigos: [');
-
 		while (L <> nil) do begin
-			write(L^.dato.id, ', ');
+			write('| ', L^.elem.id, ' ');
 			L := L^.sig;
 		end;
-
-		write(']');
+		
+		write('|');
+		writeln;
 	end;
 end;
 
 procedure ImprimirCodigosPorRubro(vP: vectorProductos);
 var i: integer;
-begin 
-	for i := 1 to 8 to begin 
-		writeln('Rubro: ', i);
-		writeln('---------');
+begin
+	writeln('Codigos');
+	writeln('----------------------------------');
+	for i := 1 to 8 do begin 
+		write('Rubro ', i, ': ');
 		ImprimirCodigosLista(vP[i]);
-		writeln;
 	end;
+	writeln;
 end;
 
 procedure GenerarVector(L: lista; var vR3: vectorRubro3; var dimL: integer);
-var i: integer;
 begin
 	dimL := 0;
 
 	while (L <> nil) and (dimL < 30) do begin
 		dimL := dimL + 1;
-		vR3[dimL] := L^.dato;
+		vR3[dimL] := L^.elem;
 
 		L := L^.sig;
 	end;
@@ -149,14 +146,15 @@ end;
 
 procedure Ordenar(var v: vectorRubro3; dimLog: integer);
 var 
-    i, j, actual: integer;
+    i, j: integer;
+    actual: producto;
 
 begin 
     for i := 2 to dimLog do begin
         actual := v[i];
         j := i - 1;
 
-        while (j > 0) and (v[j] > actual) do 
+        while (j > 0) and (v[j].precio > actual.precio) do 
         begin 
             v[j + 1] := v[j];
             j := j - 1;
@@ -164,6 +162,30 @@ begin
 
         v[j + 1] := actual;
     end;
+end;
+
+procedure ImprimirPrecios(vP: vectorRubro3; dimL: integer);
+var i: integer;
+begin 
+	write('Precios de productos rubro 3: ');
+	for i := 1 to dimL do 
+		write('| ', vP[i].precio:0:2,' ');
+		
+	write('|');
+	writeln();
+	writeln();
+end;
+
+function CalcularPromedio(vR3: vectorRubro3; dimL: integer): real;
+var 
+	i: integer;
+	sum: real;
+begin
+	sum := 0;
+	for i := 1 to dimL do 
+		sum := sum + vR3[i].precio;
+		
+	CalcularPromedio := sum / dimL;
 end;
 
 
@@ -187,8 +209,9 @@ Begin
 	{ d: Ordeno el vector por precios }
 	Ordenar(vR3, dimL);
 
-	ImprimirPrecios();
-	CalcularPromedio();
+	ImprimirPrecios(vR3, dimL);
+	writeln('Promedio de precios de Rubro 3: ', CalcularPromedio(vR3, dimL):0:2);
+	
 End.
 		
 
