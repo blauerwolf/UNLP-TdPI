@@ -8,7 +8,7 @@
   ✅ d. Un módulo recursivo que reciba el vector generado en a) y devuelva la suma de los valores pares contenidos en el vector.
   ✅ e. Un módulo recursivo que reciba el vector generado en a) y devuelva el móximo valor del vector.
   ✅ f. Un módulo recursivo que reciba el vector generado en a) y un valor y devuelva verdadero si dicho valor se encuentra en el vector o falso en caso contrario.
-  g. Un módulo que reciba el vector generado en a) e imprima, para cada número contenido en el vector, sus dógitos en el orden en que aparecen en el nómero. 
+  ✅ g. Un módulo que reciba el vector generado en a) e imprima, para cada número contenido en el vector, sus dógitos en el orden en que aparecen en el nómero. 
   Debe implementarse un módulo recursivo que reciba el nómero e imprima lo pedido. Ejemplo si se lee el valor 142, se debe imprimir 1  4  2
 }
 
@@ -59,7 +59,7 @@ End;
 procedure ImprimirVectorRecursivo (v: vector; dimL: integer);
 begin    
   if (dimL > 0) then begin 
-    ImprimirVector(v, dimL - 1);
+    ImprimirVectorRecursivo(v, dimL - 1);
     write('| ', v[dimL], ' ');
   end;     
 end; 
@@ -75,13 +75,6 @@ function Sumar (v: vector; dimL: integer): integer;
       SumarRecursivo:= SumarRecursivo (v, pos + 1, dimL) + v[pos]   // Sumo recursivo
     else 
       SumarRecursivo := SumarRecursivo (v, pos + 1, dimL);    // Avanzo al siguiente elemento
-    
-    {
-      // Esto suma todos los elementos del vector
-      if (pos <= dimL)   
-      then SumarRecursivo:= SumarRecursivo (v, pos + 1, dimL) + v[pos]  
-      else SumarRecursivo:=0  
-    }
   End;
  
 var pos: integer; 
@@ -144,11 +137,12 @@ var dimL, suma, maximo, valor: integer;
 Begin 
   CargarVector (v, dimL);
   writeln;
-  if (dimL = 0) then writeln ('--- Vector sin elementos ---')
-                else begin
-                       ImprimirVector (v, dimL);
-                     {  ImprimirVectorRecursivo (v, dimL);}
-                     end;
+  if (dimL = 0) then 
+    writeln ('--- Vector sin elementos ---')
+  else begin
+    {ImprimirVector (v, dimL);}
+    ImprimirVectorRecursivo (v, dimL);
+  end;
   writeln;
   writeln;                   
   suma:= Sumar(v, dimL);
@@ -168,8 +162,10 @@ Begin
   encontre:= BuscarValor(v, dimL, valor);
   writeln;
   writeln;
-  if (encontre) then writeln('El ', valor, ' esta en el vector')
-                else writeln('El ', valor, ' no esta en el vector');
+  if (encontre) then 
+    writeln('El ', valor, ' esta en el vector')
+  else 
+    writeln('El ', valor, ' no esta en el vector');
                 
   writeln;
   writeln;

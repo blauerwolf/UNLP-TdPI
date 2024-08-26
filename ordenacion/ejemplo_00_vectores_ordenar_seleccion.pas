@@ -23,6 +23,26 @@ begin
   end;
 end;
 
+procedure Ordenar2(var v: numeros; dimLog: integer);
+var i, j, p, item: integer; 
+begin 
+  for i := 1 to dimLog -1 do 
+  begin         { Busca el mínimo v[p] entre v[i], ..., v[N] }
+    p := i;
+    for j := i + 1 to dimLog do 
+      //if v[j] < v[p] then 
+      if v[p] > v[j] then
+        p := j;
+
+    { Intercambia v[i] y v[p] }
+    if (i <> p) then begin 
+      item := v[p];
+      v[p] := v[i];
+      v[i] := item;
+    end;
+  end;
+end;
+
 procedure llenarNumeros(var v: numeros; var dim: integer);
 var i: integer;
 begin 
