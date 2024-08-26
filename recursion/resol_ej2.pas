@@ -8,7 +8,7 @@
     la lista en orden inverso al que están almacenados.
     ✅ d. Implemente un módulo recursivo que reciba la lista generada en a) y devuelva el mínimo
     valor de la lista.
-    e. Implemente un módulo recursivo que reciba la lista generada en a) y un valor y devuelva
+    ✅ e. Implemente un módulo recursivo que reciba la lista generada en a) y un valor y devuelva
     verdadero si dicho valor se encuentra en la lista o falso en caso contrario.
 }
 
@@ -97,9 +97,20 @@ begin
     end;
 end;
 
+function BuscarValor(l: lista; valor: integer): boolean;
+begin 
+  if (l = nil) then 
+    BuscarValor := false
+  else if (l^.dato = valor) then
+    BuscarValor := true
+  else
+    BuscarValor := BuscarValor(l^.sig, valor);
+end;
+
 
 Var 
     l: lista;
+    valor: integer;
 Begin 
     //randomize;
     InicializarLista(l);
@@ -111,5 +122,11 @@ Begin
     writeln('Imprime lista orden reverso: ');
     ImprimirListaReverso(l);
     writeln('El mínimo es: ', ObtenerMinimo(l));
-    //BuscarValor(l, valor);
+    writeln;
+    write('Ingrese un valor a buscar: ');
+    readln(valor);
+    if (BuscarValor(l, valor)) then
+      writeln('El valor ', valor, ' se encuentra en la lista')
+    else 
+      writeln('El valor ', valor, ' NO se encuentra en la lista');
 End.
