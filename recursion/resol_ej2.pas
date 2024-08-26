@@ -91,9 +91,19 @@ end;
 
 
 function ObtenerMinimo(l: lista): integer;
-begin 
-    if (l <> nil) then begin 
-        ObtenerMinimo := Min(ObtenerMinimo(l^.sig), l^.dato);
+begin
+    if (l = nil) then
+    begin
+        // Caso base: Si la lista está vacía, devolvemos un valor muy alto
+        // (para que no afecte la comparación).
+        ObtenerMinimo := MaxInt;
+    end else begin
+        // Llamada recursiva para obtener el mínimo del resto de la lista.
+        ObtenerMinimo := ObtenerMinimo(l^.sig);
+        
+        // Comparar el dato actual con el mínimo de la sublista.
+        if l^.dato < ObtenerMinimo then
+            ObtenerMinimo := l^.dato;
     end;
 end;
 
@@ -121,7 +131,7 @@ Begin
     writeln;
     writeln('Imprime lista orden reverso: ');
     ImprimirListaReverso(l);
-    writeln('El mínimo es: ', ObtenerMinimo(l));
+    writeln('El minimo es: ', ObtenerMinimo(l));
     writeln;
     write('Ingrese un valor a buscar: ');
     readln(valor);
