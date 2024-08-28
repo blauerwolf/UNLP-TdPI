@@ -4,11 +4,11 @@
   nombre y edad. La carga finaliza con el numero de socio 0 y el arbol debe quedar ordenado por numero de socio. La informacion de cada socio debe generarse
   aleatoriamente.
   b. Una vez generado el arbol, realice modulos independientes que reciban el arbol como parametro para: 
-      i. Informar los datos de los socios en orden creciente.
-      ii. Informar los datos de los socios en orden decreciente.
-      iii. Informar el número de socio con mayor edad. Debe invocar a un módulo recursivo que retorne dicho valor.
-      iv. Aumentar en 1 la edad de los socios con edad impar e informar la cantidad de socios que se les aumento la edad.
-      vi. Leer un nombre e informar si existe o no existe un socio con ese nombre. Debe invocar a un módulo recursivo que reciba el nombre leído y retorne verdadero o falso.
+      ✅ i. Informar los datos de los socios en orden creciente.
+      ✅ ii. Informar los datos de los socios en orden decreciente.
+      ✅ iii. Informar el número de socio con mayor edad. Debe invocar a un módulo recursivo que retorne dicho valor.
+      ✅ iv. Aumentar en 1 la edad de los socios con edad impar e informar la cantidad de socios que se les aumento la edad.
+      ✅ vi. Leer un nombre e informar si existe o no existe un socio con ese nombre. Debe invocar a un módulo recursivo que reciba el nombre leído y retorne verdadero o falso.
       vii. Informar la cantidad de socios. Debe invocar a un módulo recursivo que retorne dicha cantidad.
       viii. Informar el promedio de edad de los socios. Debe invocar a un módulo recursivo que retorne el promedio de las edades de los socios.
 
@@ -18,7 +18,9 @@ Program ImperativoClase3;
 
 type 
   rangoEdad = 12..100;
+
   cadena15 = string [15];
+
   socio = record
     numero: integer;
     nombre: cadena15;
@@ -76,7 +78,7 @@ Begin
    CargarSocio (unSocio);
   end;
  writeln;
- writeln ('//////////////////////////////////////////////////////////');
+ writeln ('-------------------------------------------------');
  writeln;
 end;
 
@@ -98,7 +100,7 @@ Begin
  writeln;
  InformarDatosSociosOrdenCreciente (a);
  writeln;
- writeln ('//////////////////////////////////////////////////////////');
+ writeln ('-------------------------------------------------');
  writeln;
 end;
 
@@ -139,7 +141,7 @@ begin
          writeln;
        end;
   writeln;
-  writeln ('//////////////////////////////////////////////////////////');
+  writeln ('-------------------------------------------------');
   writeln;
 end;
 
@@ -169,16 +171,83 @@ begin
   writeln;
 end;
 
-var a: arbol; 
+
+procedure InformarSociosOrdenDecreciente(a: arbol);
+begin 
+    // Si es nil, no hago nada
+    if (a <> nil) then begin
+        InformarSociosOrdenDecreciente(a^.HD);
+        writeln(a^.dato.numero);
+        InformarSociosOrdenDecreciente(a^.HI);
+    end;
+end;
+
+
+function InformarExistenciaNombreSocio(a: arbol; nombre: cadena15): boolean;
+var 
+    existe: boolean;
+begin 
+    if (a = nil) then 
+        InformarExistenciaNombreSocio := false
+    else begin 
+        if (a^.dato.nombre = nombre) then 
+            InformarExistenciaNombreSocio := true
+        else begin 
+            existe := InformarExistenciaNombreSocio(a^.HI, nombre);
+            if (not existe) then 
+                existe := InformarExistenciaNombreSocio(a^.HD, nombre);
+            
+            InformarExistenciaNombreSocio := existe;
+        end;
+    end;
+end;
+
+
+function InformarCantidadSocios(a: arbol): integer;
+begin 
+
+    if (a = nil) then InformarCantidadSocios := 0    // Caso base
+    else 
+      InformarCantidadSocios := 1 + InformarCantidadSocios(a^.HI) 
+                                + InformarCantidadSocios(a^.HD);
+
+end;
+
+
+
+function sumarEdades(a: arbol): integer;
+begin 
+  if (a = nil) then sumarEdades := 0
+  else sumarEdades := a^.dato.edad + sumarEdades(a^.HI)
+                      + sumarEdades(a^.HD);
+end;
+
+function InformarPromedioDeEdad(suma, total: integer): real;
+begin InformarPromedioDeEdad := suma / total; end;
+
+var 
+  a: arbol; 
+  nom: cadena15;
+  sumaEdades, totSocios: integer;
 Begin
   randomize;
   GenerarArbol (a);
   InformarSociosOrdenCreciente (a);
-  {InformarSociosOrdenDecreciente (a); COMPLETAR}
+  InformarSociosOrdenDecreciente (a); 
   InformarNumeroSocioConMasEdad (a);
   AumentarEdadNumeroImpar (a);
-  { InformarExistenciaNombreSocio (a); COMPLETAR
-    InformarCantidadSocios (a); COMPLETAR
-    InformarPromedioDeEdad (a); COMPLETAR
-  }   
+
+  // Informo la existencia de un nombre de socio:
+  write('Ingrese un nombre de socio: '); readln(nom);
+  if (InformarExistenciaNombreSocio(a, nom)) then 
+    writeln('El socio ', nom, ' se encuentra registrado.')
+  else 
+    writeln('El socio ', nom, ' NO se encuentra registrado.');
+
+  totSocios := InformarCantidadSocios(a);
+  writeln(totSocios);
+  writeln;
+  sumaEdades := sumarEdades(a);
+  writeln('Promedio de edades: ', InformarPromedioDeEdad(sumaEdades, totSocios):0:2);
+  
 End.
