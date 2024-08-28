@@ -245,7 +245,8 @@ Begin
     writeln('El socio ', nom, ' NO se encuentra registrado.');
 
   totSocios := InformarCantidadSocios(a);
-  writeln(totSocios);
+  writeln;
+  writeln('Total de Socios: ', totSocios);
   writeln;
   sumaEdades := sumarEdades(a);
   writeln('Promedio de edades: ', InformarPromedioDeEdad(sumaEdades, totSocios):0:2);

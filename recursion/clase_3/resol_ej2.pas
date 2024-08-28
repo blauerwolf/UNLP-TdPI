@@ -39,7 +39,7 @@ type
     HD: arbol;
   end;
 
-  arbolVendidos = ^nodoVendidos
+  arbolVendidos = ^nodoVendidos;
   nodoVendidos = record 
     dato: vendidos;
     HI: arbolVendidos;
