@@ -12,3 +12,67 @@
   c. Un módulo que reciba la estructura generada en a. y un valor real. Este módulo debe
   retornar los legajos y promedios de los alumnos cuyo promedio supera el valor ingresado.
 }
+
+program ejercicio3;
+
+type 
+    
+    // TODO: El record para el alumno no debería tener la nota
+    final = record 
+        legajo: integer;
+        cod_materia: integer;
+        fecha: string[10];
+        nota: real;
+    end;
+
+    arbol = ^nodoArbol;
+    nodoArbol = record 
+        dato: final;
+        HI: arbol;
+        HD: arbol;
+    end;
+
+procedure leerFinal(f: final);
+begin 
+    write('Legajo alumno: '); readln(f.legajo);
+    if (f.legajo <> 0) then begin 
+        write('Codigo de materia: '); readln(f.cod_materia);
+        write('Fecha final: '); readln(f.fecha);
+        write('Nota obtenida: '); readln(f.nota);
+    end;
+end;
+
+
+Procedure InsertarElemento (var a: arbol; elem: final);
+Begin
+  if (a = nil) 
+  then begin
+      new(a);
+      a^.dato:= elem; 
+      a^.HI:= nil; 
+      a^.HD:= nil;
+  end
+  else if (elem.cod < a^.dato.cod) 
+        then InsertarElemento(a^.HI, elem)
+        else InsertarElemento(a^.HD, elem); 
+End;
+
+
+procedure CargarFinales(var a: arbol);
+var f: final;
+begin 
+    leerFinal(f);
+    while (f.legajo <> 0) do begin 
+        Agregar(a, f);
+        leerFinal(f);
+    end;
+end;
+
+
+{ PROGRAMA PRINCIPAL }
+var 
+  a: arbol;
+
+Begin 
+    CargarFinales(a);
+End.
