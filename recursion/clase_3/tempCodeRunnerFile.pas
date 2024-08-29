@@ -1,0 +1,1 @@
+ImprimirVenta(a^.dato);

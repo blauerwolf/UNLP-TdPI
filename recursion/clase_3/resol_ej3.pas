@@ -14,12 +14,14 @@
 }
 
 program ejercicio3;
+Uses sysutils;
 
 type 
-    
+    tipoFecha = string[10];
+
     final = record 
         cod_materia: integer;
-        fecha: string[10];
+        fecha: tipoFecha;
         nota: real;
     end;
 
@@ -79,7 +81,7 @@ var
     exam: listaFinales;
 begin 
     if (a = nil) then begin 
-        // Creo el nodo para el nuevo final cargado
+        // Creo el nodo para el nuevo examen final cargado
         new(exam);
         exam^.dato := f;
         exam^.sig := nil;
@@ -108,10 +110,34 @@ end;
 
 
 procedure CargarDatos(var a: arbol);
+
+    // Genera una fecha aleatoria en formato YYYY-mm-dd. 
+    // Sin considerar casos especiales ej 31/02
+    procedure GenerarFechaAleatoria(var fecha: tipoFecha);
+    var 
+        aux: integer;
+        mes, dia: string[2];
+    begin
+        // Genero el mes
+        aux := random(13) + 1;
+        if (aux < 10) then mes := IntToStr(0) + IntToStr(aux)
+        else mes := IntToStr(aux);
+
+        // Genero el día
+        aux := random(31) + 1;
+        if (aux < 10) then dia := IntToStr(0) + IntToStr(aux)
+        else dia := IntToStr(aux);
+
+        fecha := IntToStr(random(25) + 2000) + '-' + mes + '-' + dia;
+    end;
+
+
     procedure leerFinal(var f: final);
     begin 
         write('Codigo de materia: '); readln(f.cod_materia);
-        write('Fecha final: '); readln(f.fecha);
+        write('Fecha final: '); 
+        GenerarFechaAleatoria(f.fecha);
+        writeln(f.fecha);
         write('Nota obtenida: '); readln(f.nota);
         writeln;
     end;
@@ -215,6 +241,9 @@ Begin
     writeln;
     write('Ingrese el promedio para buscar alumnos: ');
     readln(prom);
+    writeln;
+    writeln('Alumnos con promedio igual o superior a ', prom:0:2);
+    writeln('---------------------------------------------');
     InformarPromediosSobre(a, prom);
     writeln;
 End.
