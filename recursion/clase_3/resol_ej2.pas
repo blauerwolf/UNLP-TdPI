@@ -8,7 +8,7 @@
   ✅ ii. Generar y retornar otro árbol binario de búsqueda de productos vendidos ordenado por
   código de producto. Cada nodo del árbol debe contener el código de producto y la
   cantidad total de unidades vendidas.
-  iii. Generar y retornar otro árbol binario de búsqueda de productos vendidos ordenado por
+  ✅ iii. Generar y retornar otro árbol binario de búsqueda de productos vendidos ordenado por
   código de producto. Cada nodo del árbol debe contener el código de producto y la lista de
   las ventas realizadas del producto.
   Nota: El módulo debe retornar TRES árboles.
@@ -58,16 +58,27 @@ type
 
   // TODO revisar la lista de ventas del producto
   // Arbol iii
-  l_ventas = ^productoVentas;
 
   productoVentas = record 
-      cod: integer;
-      sig: l_ventas; 
+      fecha: tipoFecha;
+      u_vendidas: integer;
   end;
 
-  arbolProductosVentas = ^nodoProductosVentas;
-  nodoProductosVentas = record 
+
+  // La lista de ventas de un  producto tiene fecha 
+  // y unidades vendidas en esa venta.
+  l_ventas = ^nodoProductoVentas;
+
+  nodoProductoVentas = record 
       dato: productoVentas;
+      sig: l_ventas;
+  end;
+
+  // Registro para el Arbol iii
+  arbolProductosVentas = ^nodoArbolProductosVentas;
+  nodoArbolProductosVentas = record 
+      cod: integer;
+      lista: l_ventas;
       HI: arbolProductosVentas;
       HD: arbolProductosVentas;
   end;
@@ -120,7 +131,7 @@ end;
 procedure InsertOrUpdate(var a: arbolProductos; cod: integer; tot_u_vendidas: integer);
 var aux: arbolProductos;
 begin
-    // CAso base, árbol vacío.
+    // Caso base, árbol vacío.
     if (a = nil) then begin 
         new(aux);
         aux^.dato.cod := cod;
@@ -142,7 +153,20 @@ begin
     end;
 end;
 
-procedure InsertarOrdenado(var L: l_ventas; cod: integer);
+{ Inserta adelante una venta individual de un producto }
+procedure AgregarAdelante(var l: l_ventas; p: productoVentas);
+var
+    nue: l_ventas;
+
+begin
+    new(nue);
+    nue^.dato := p;
+    nue^.sig := l;
+    l := nue;
+end;
+
+{ Inserta una venta individual de un producto en su lista }
+procedure InsertarOrdenado(var L: l_ventas; dato: productoVentas);
 var 
   nue: l_ventas;
   act, ant: l_ventas;          { Puntaros auxiliares para recorrido }
@@ -150,43 +174,82 @@ var
 begin 
   { Crear el nodo a insertar }
   new (nue);
-  nue^.dato := cod;
-  act := L;                 { Ucibo act y ant al inicio de la lista }
+  nue^.dato := dato;
+  act := L;                 { Ubica act y ant al inicio de la lista }
   ant := L;
 
   { Buscar la posición para insertar el nodo creado }
-  while (act <> nil) and (f.fecha > act^.dato.fecha) do 
+  while (act <> nil) and (dato.fecha > act^.dato.fecha) do 
   begin 
     ant := act;
     act := act^.sig;
   end;
 
-  if (act = ant) then     { al inicio o lista vacía }
-    L := nue
-  else                    { al medio o al final }
-    ant^.sig := nue;
-
+  if (act = ant) then L := nue    { al inicio o lista vacía }
+  else ant^.sig := nue;           { al medio o al final }
+    
   nue^.sig := act;
 end;
+
+
+procedure InsertOrUpdateProductoVentas(var a: arbolProductosVentas; cod: integer; dato: productoVentas);
+var aux: arbolProductosVentas;
+begin 
+    // Caso base: árbol vacío.
+    if (a = nil) then  begin
+        // Creo el nuevo nodo del árbol 
+        new(aux);
+        aux^.cod := cod;
+        aux^.HD := nil;
+        aux^.HI := nil;
+
+        // Agrego la venta al producto
+        // Como se que el producto es nuevo, inserto adelante el nuevo nodo.
+        AgregarAdelante(aux^.lista, dato);
+
+        writeln('Cod: ', cod, ' data: ', dato.fecha, ' ', aux^.lista <> nil);
+
+        // Asigno al nodo como raiz del árbol
+        a := aux;
+    end
+    else begin 
+        // Si estoy actualizando un nodo existente 
+        if (a^.cod = cod) then
+            InsertarOrdenado(a^.lista, dato)
+        else begin 
+            if (a^.cod > cod) then
+                InsertOrUpdateProductoVentas(a^.HI, cod, dato)
+            else
+                InsertOrUpdateProductoVentas(a^.HD, cod, dato);
+        end;
+    end;
+end;
+
 
 
 procedure GenerarArboles(var a1: arbolVentas; var a2: arbolProductos; var a3: arbolProductosVentas);
 var 
   v: venta;
+  p: productoVentas;
 begin 
     { Inicializo todos los árboles }
     a1 := nil; a2 := nil; a3 := nil;
 
     { Cargo ventas hasta que se carga el producto 0 }
     GenerarVenta(v);
+    p.fecha := v.fecha;
+    p.u_vendidas := v.u_vendidas;
+
     while (v.cod <> 0) do begin 
         InsertarVenta(a1, v);
 
         InsertOrUpdate(a2, v.cod, v.u_vendidas);
 
-        InsertOrUpdate(a3, v.cod, )
+        InsertOrUpdateProductoVentas(a3, v.cod, p);
 
         GenerarVenta(v);
+        p.fecha := v.fecha;
+        p.u_vendidas := v.u_vendidas;
     end;
 end;
 
@@ -221,6 +284,32 @@ begin
     end;
 end;
 
+procedure ImprimirArbolProductosVentas(a: arbolProductosVentas);
+    procedure ImprimirListaProductos(l: l_ventas);
+    begin
+        while (l <> nil) do begin 
+            writeln(l^.dato.fecha, #9, l^.dato.u_vendidas);
+            l := l^.sig;
+        end;
+    end;
+
+
+    procedure ImprimirProducto(cod: integer; l: l_ventas );
+    begin
+        writeln('======> Prod: ', cod, ' <======');
+        writeln('   Fecha     Unidades');
+        writeln('-------------------------');
+        ImprimirListaProductos(l);
+        writeln;
+    end;
+begin 
+    if (a <> nil) then begin 
+        ImprimirArbolProductosVentas(a^.HD);
+        ImprimirProducto(a^.cod, a^.lista);
+        ImprimirArbolProductosVentas(a^.HI);
+    end;
+end;
+
 function ObtenerTotalVendidosFecha(a: arbolVentas; fecha: tipoFecha): integer;
 var cant: integer;
 begin 
@@ -238,46 +327,36 @@ begin
 end;
 
 
-function ObtenerCodProdMaxVentas(a: arbolProductos): integer;
+// TODO: Verificar
+function CodigoProductoMasVendido (a: arbolProductos): integer;
+
+	procedure MaxCodigo (a: arbolProductos; var maxCod, maxVentas: integer);
+	
+		procedure ActualizarMaximo (p: producto; var maxCod, maxVentas: integer);
+		begin
+			if (p.tot_u_vendidas > maxVentas) then begin
+				maxVentas:= p.tot_u_vendidas;
+				maxCod:= p.cod;
+			end;
+		end;
+	
+	begin
+		if (a <> nil) then begin
+			if (a^.HI <> nil) then 
+				MaxCodigo(a^.HI, maxCod, maxVentas);
+			ActualizarMaximo (a^.dato, maxCod, maxVentas);
+			if (a^.HD <> nil) then
+				MaxCodigo(a^.HD, maxCod, maxVentas);
+		end;
+	end;
 
 var
-    codIzq, codDer, codMax, maxIzq, maxDer: integer;
-begin 
-    if (a = nil) then ObtenerCodProdMaxVentas := -1
-    else begin 
-        // Asumo que el actual es el código con mayor ventas
-        codMax := a^.dato.cod;
-        maxIzq := -1;
-        maxDer := -1;
-
-        codIzq := ObtenerCodProdMaxVentas(a^.HI);
-        codDer := ObtenerCodProdMaxVentas(a^.HD);
-
-        if (a^.HI <> nil) then 
-            maxIzq := a^.HI^.dato.tot_u_vendidas;
-
-
-        if (a^.HD <> nil) then 
-            maxDer := a^.HD^.dato.tot_u_vendidas;
-
-
-        if (codIzq <> -1) and (maxIzq > a^.dato.tot_u_vendidas) then
-        begin
-            if (maxIzq >= maxDer)
-            then codMax := codIzq;
-        end;
-
-        if (codDer <> -1) and (maxDer > a^.dato.tot_u_vendidas) then 
-        begin
-            if (maxDer >= maxIzq)
-            then codMax := codDer;
-        end;
-
-        ObtenerCodProdMaxVentas := codMax;
-
-    end;
+	maxCod, maxVentas: integer;
+begin
+	maxVentas:= -1;
+	MaxCodigo(a, maxCod, maxVentas);
+	CodigoProductoMasVendido:= maxCod;
 end;
-
 
 
 { PROGRAMA PRINCIPAL }
@@ -296,6 +375,9 @@ Begin
     writeln('Arbol de productos: ');
     ImprimirArbolProductos(a2);
     writeln;
+    writeln('Arbol de productos con lista de ventas: ');
+    ImprimirArbolProductosVentas(a3);
+    writeln;
 
     write('Ingrese fecha de búsqueda: '); readln(fecha);
     writeln;
@@ -304,7 +386,7 @@ Begin
     writeln('Cantidad de de productos vendidos en la fecha ', fecha, #9, cantProdVendidos);
     writeln('----------------------------------------------------------------------');
     writeln;
-    codTopVentas := ObtenerCodProdMaxVentas(a2);
+    codTopVentas := CodigoProductoMasVendido(a2);
     writeln('Código del producto con mayor cantidad de ventas: ', codTopVentas);
     writeln;
 
