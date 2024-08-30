@@ -14,7 +14,7 @@
   Nota: El módulo debe retornar TRES árboles.
   ✅ b. Implemente un módulo que reciba el árbol generado en i. y una fecha y retorne la cantidad
   total de productos vendidos en la fecha recibida.
-  c. Implemente un módulo que reciba el árbol generado en ii. y retorne el código de producto
+  ✅ c. Implemente un módulo que reciba el árbol generado en ii. y retorne el código de producto
   con mayor cantidad total de unidades vendidas.
   d. Implemente un módulo que reciba el árbol generado en iii. y retorne el código de producto
   con mayor cantidad de ventas.
@@ -207,8 +207,6 @@ begin
         // Como se que el producto es nuevo, inserto adelante el nuevo nodo.
         AgregarAdelante(aux^.lista, dato);
 
-        writeln('Cod: ', cod, ' data: ', dato.fecha, ' ', aux^.lista <> nil);
-
         // Asigno al nodo como raiz del árbol
         a := aux;
     end
@@ -296,9 +294,8 @@ procedure ImprimirArbolProductosVentas(a: arbolProductosVentas);
 
     procedure ImprimirProducto(cod: integer; l: l_ventas );
     begin
-        writeln('======> Prod: ', cod, ' <======');
-        writeln('   Fecha     Unidades');
-        writeln('-------------------------');
+        writeln('   Fecha     Unidades     (PROD: ', cod,')');
+        writeln('------------------------------------');
         ImprimirListaProductos(l);
         writeln;
     end;
@@ -327,11 +324,8 @@ begin
 end;
 
 
-// TODO: Verificar
-function CodigoProductoMasVendido (a: arbolProductos): integer;
-
+function GetCodigoTopProducto (a: arbolProductos): integer;
 	procedure MaxCodigo (a: arbolProductos; var maxCod, maxVentas: integer);
-	
 		procedure ActualizarMaximo (p: producto; var maxCod, maxVentas: integer);
 		begin
 			if (p.tot_u_vendidas > maxVentas) then begin
@@ -355,7 +349,47 @@ var
 begin
 	maxVentas:= -1;
 	MaxCodigo(a, maxCod, maxVentas);
-	CodigoProductoMasVendido:= maxCod;
+	GetCodigoTopProducto := maxCod;
+end;
+
+
+function GetCodigoTopVentas (a: arbolProductosVentas): integer;
+
+    function ContarVentas(l: l_ventas):integer;
+    begin 
+        if (l = nil) then 
+            ContarVentas := 0
+        else begin 
+            ContarVentas := l^.dato.u_vendidas + ContarVentas(l^.sig);
+        end;
+    end;
+
+    procedure ActualizarMaximo (cod, vend: integer; var maxCod, maxVentas: integer);
+		begin
+			if (vend > maxVentas) then begin
+				maxVentas:= vend;
+				maxCod:= cod;
+			end;
+		end;
+
+	  procedure MaxCodigo (a: arbolProductosVentas; var maxCod, maxVentas: integer);
+    begin
+      if (a <> nil) then begin
+        if (a^.HI <> nil) then 
+          MaxCodigo(a^.HI, maxCod, maxVentas);
+
+        ActualizarMaximo (a^.cod, ContarVentas(a^.lista), maxCod, maxVentas);
+        if (a^.HD <> nil) then
+          MaxCodigo(a^.HD, maxCod, maxVentas);
+      end;
+    end;
+
+var
+	maxCod, maxVentas: integer;
+begin
+    maxVentas:= -1;
+    MaxCodigo(a, maxCod, maxVentas);
+    GetCodigoTopVentas := maxCod;
 end;
 
 
@@ -370,24 +404,28 @@ Begin
     randomize;
     GenerarArboles(a1, a2, a3);
     writeln('Arbol de ventas cargado: ');
+    writeln;
     ImprimirArbolVentas(a1);
     writeln;
     writeln('Arbol de productos: ');
+    writeln;
     ImprimirArbolProductos(a2);
     writeln;
     writeln('Arbol de productos con lista de ventas: ');
     ImprimirArbolProductosVentas(a3);
     writeln;
 
-    write('Ingrese fecha de búsqueda: '); readln(fecha);
+    write('Ingrese fecha de busqueda: '); readln(fecha);
     writeln;
     
     cantProdVendidos := ObtenerTotalVendidosFecha(a1, fecha);
-    writeln('Cantidad de de productos vendidos en la fecha ', fecha, #9, cantProdVendidos);
-    writeln('----------------------------------------------------------------------');
+    writeln('Cantidad de de productos vendidos en la fecha ', fecha, ': ', cantProdVendidos);
     writeln;
-    codTopVentas := CodigoProductoMasVendido(a2);
-    writeln('Código del producto con mayor cantidad de ventas: ', codTopVentas);
+    codTopVentas := GetCodigoTopProducto(a2);
+    writeln('Codigo del producto con mayor cantidad de ventas (Arbol 2): ', codTopVentas);
+    writeln;
+    codTopVentas := GetCodigoTopVentas(a3);
+    writeln('Codigo del producto con mayor cantidad de ventas (Arbol 3): ', codTopVentas);
     writeln;
 
 
