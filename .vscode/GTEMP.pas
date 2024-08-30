@@ -1,220 +1,441 @@
 {
-  Implementar un programa que contenga:
-  ✅ a. Un módulo que lea información de los finales rendidos por los alumnos de la Facultad de
-  Informática y los almacene en una estructura de datos. La información que se lee es legajo,
-  código de materia, fecha y nota. La lectura de los alumnos finaliza con legajo 0. La estructura
-  generada debe ser eficiente para la búsqueda por número de legajo y para cada alumno deben
-  guardarse los finales que rindió en una lista.
-  ✅ b. Un módulo que reciba la estructura generada en a. y retorne la cantidad de alumnos con
-  legajo impar.
-  ✅ c. Un módulo que reciba la estructura generada en a. e informe, para cada alumno, su legajo y
-  su cantidad de finales aprobados (nota mayor o igual a 4).
-  c. Un módulo que reciba la estructura generada en a. y un valor real. Este módulo debe
-  retornar los legajos y promedios de los alumnos cuyo promedio supera el valor ingresado.
+  2. Escribir un programa que:
+  ✅ a. Implemente un módulo que genere aleatoriamente información de ventas de un comercio.
+  Para cada venta generar código de producto, fecha y cantidad de unidades vendidas. Finalizar
+  con el código de producto 0. Un producto puede estar en más de una venta. Se pide:
+  ✅ i. Generar y retornar un árbol binario de búsqueda de ventas ordenado por código de
+  producto. Los códigos repetidos van a la derecha.
+  ✅ ii. Generar y retornar otro árbol binario de búsqueda de productos vendidos ordenado por
+  código de producto. Cada nodo del árbol debe contener el código de producto y la
+  cantidad total de unidades vendidas.
+  ✅ iii. Generar y retornar otro árbol binario de búsqueda de productos vendidos ordenado por
+  código de producto. Cada nodo del árbol debe contener el código de producto y la lista de
+  las ventas realizadas del producto.
+  Nota: El módulo debe retornar TRES árboles.
+  ✅ b. Implemente un módulo que reciba el árbol generado en i. y una fecha y retorne la cantidad
+  total de productos vendidos en la fecha recibida.
+  ✅ c. Implemente un módulo que reciba el árbol generado en ii. y retorne el código de producto
+  con mayor cantidad total de unidades vendidas.
+  d. Implemente un módulo que reciba el árbol generado en iii. y retorne el código de producto
+  con mayor cantidad de ventas.
 }
 
-program ejercicio3;
+program ejercicio2;
 
+Uses sysutils;
+const 
+  maxCodProducto = 100;
 type 
-    
-    final = record 
-        cod_materia: integer;
-        fecha: string[10];
-        nota: real;
+
+  tipoFecha = string[10];
+
+  // Arbol i:
+  venta = record 
+      cod: integer;
+      fecha: tipoFecha;
+      u_vendidas: integer;
+  end;
+
+  arbolVentas = ^nodoVentas;
+  nodoVentas = record 
+      dato: venta;
+      HI: arbolVentas;
+      HD: arbolVentas;
+  end;
+
+  // Arbol ii 
+  producto = record 
+      cod: integer;
+      tot_u_vendidas: integer;
+  end;
+
+  arbolProductos = ^nodoProductos;
+  nodoProductos = record 
+      dato: producto;
+      HI: arbolProductos;
+      HD: arbolProductos;
+  end;
+
+  // TODO revisar la lista de ventas del producto
+  // Arbol iii
+
+  productoVentas = record 
+      fecha: tipoFecha;
+      u_vendidas: integer;
+  end;
+
+
+  // La lista de ventas de un  producto tiene fecha 
+  // y unidades vendidas en esa venta.
+  l_ventas = ^nodoProductoVentas;
+
+  nodoProductoVentas = record 
+      dato: productoVentas;
+      sig: l_ventas;
+  end;
+
+  // Registro para el Arbol iii
+  arbolProductosVentas = ^nodoArbolProductosVentas;
+  nodoArbolProductosVentas = record 
+      cod: integer;
+      lista: l_ventas;
+      HI: arbolProductosVentas;
+      HD: arbolProductosVentas;
+  end;
+
+
+procedure GenerarVenta(var v: venta);
+
+    { Genera una fecha aleatoria tipo YYYY-mm-dd }
+    procedure GenerarFechaAleatoria(var fecha: tipoFecha);
+    var 
+        aux: integer;
+        mes, dia: string[2];
+    begin
+        // Genero el mes
+        aux := random(13) + 1;
+        if (aux < 10) then mes := IntToStr(0) + IntToStr(aux)
+        else mes := IntToStr(aux);
+
+        // Genero el día
+        aux := random(31) + 1;
+        if (aux < 10) then dia := IntToStr(0) + IntToStr(aux)
+        else dia := IntToStr(aux);
+
+        fecha := IntToStr(random(25) + 2000) + '-' + mes + '-' + dia;
     end;
 
-    listaFinales = ^nodoFinales;
-    nodoFinales = record 
-        dato: final;
-        sig: listaFinales;
+begin 
+    v.cod := random(maxCodProducto);
+    GenerarFechaAleatoria(v.fecha);
+    v.u_vendidas := random(26) + 1; 
+end;
+
+
+{ Procedimientos para insertar elementos en los árboles }
+Procedure InsertarVenta (var a: arbolVentas; elem: venta);
+Begin
+    if (a = nil) 
+    then begin
+        new(a);
+        a^.dato:= elem; 
+        a^.HI:= nil; 
+        a^.HD:= nil;
+    end
+    else if (elem.cod < a^.dato.cod) 
+        then InsertarVenta(a^.HI, elem)
+        else InsertarVenta(a^.HD, elem); 
+end;
+
+{ Agrega un nuevo nodo al árbol de productos o actualiza el nodo }
+procedure InsertOrUpdate(var a: arbolProductos; cod: integer; tot_u_vendidas: integer);
+var aux: arbolProductos;
+begin
+    // Caso base, árbol vacío.
+    if (a = nil) then begin 
+        new(aux);
+        aux^.dato.cod := cod;
+        aux^.dato.tot_u_vendidas := tot_u_vendidas;
+        aux^.HD := nil;
+        aux^.HI := nil;
+        a := aux;
+    end
+    else begin
+        // Si estoy actualizando un nodo existente 
+        if (a^.dato.cod = cod) then
+            a^.dato.tot_u_vendidas := a^.dato.tot_u_vendidas + tot_u_vendidas
+        else begin 
+            if (a^.dato.cod > cod) then
+                InsertorUpdate(a^.HI, cod, tot_u_vendidas)
+            else
+                InsertOrUpdate(a^.HD, cod, tot_u_vendidas);
+        end;
     end;
+end;
 
-    alumno = record 
-        legajo: integer;
-        finales: listaFinales;
-    end;
+{ Inserta adelante una venta individual de un producto }
+procedure AgregarAdelante(var l: l_ventas; p: productoVentas);
+var
+    nue: l_ventas;
 
-    arbol = ^nodoArbol;
-    nodoArbol = record 
-        dato: alumno;
-        HI: arbol;
-        HD: arbol;
-    end;
+begin
+    new(nue);
+    nue^.dato := p;
+    nue^.sig := l;
+    l := nue;
+end;
 
-
-procedure InsertarOrdenado(var L: listaFinales; f: final);
+{ Inserta una venta individual de un producto en su lista }
+procedure InsertarOrdenado(var L: l_ventas; dato: productoVentas);
 var 
-  nue: listaFinales;
-  act, ant: listaFinales;          { Puntaros auxiliares para recorrido }
+  nue: l_ventas;
+  act, ant: l_ventas;          { Puntaros auxiliares para recorrido }
 
 begin 
   { Crear el nodo a insertar }
   new (nue);
-  nue^.dato := f;
-  act := L;                 { Ucibo act y ant al inicio de la lista }
+  nue^.dato := dato;
+  act := L;                 { Ubica act y ant al inicio de la lista }
   ant := L;
 
   { Buscar la posición para insertar el nodo creado }
-  while (act <> nil) and (f.fecha > act^.dato.fecha) do 
+  while (act <> nil) and (dato.fecha > act^.dato.fecha) do 
   begin 
     ant := act;
     act := act^.sig;
   end;
 
-  if (act = ant) then     { al inicio o lista vacía }
-    L := nue
-  else                    { al medio o al final }
-    ant^.sig := nue;
-
+  if (act = ant) then L := nue    { al inicio o lista vacía }
+  else ant^.sig := nue;           { al medio o al final }
+    
   nue^.sig := act;
 end;
 
-{
-    Agrega un nuevo alumno si no existe.
-    Agrega el final al alumno según su nro de legajo.
-}
-procedure InsertOrUpdate(var a: arbol; legajo: integer; f:final);
-var 
-    alu: alumno;
-    exam: listaFinales;
+
+procedure InsertOrUpdateProductoVentas(var a: arbolProductosVentas; cod: integer; dato: productoVentas);
+var aux: arbolProductosVentas;
 begin 
-    if (a = nil) then begin 
-        // Creo el nodo para el nuevo final cargado
-        new(exam);
-        exam^.dato := f;
-        exam^.sig := nil;
+    // Caso base: árbol vacío.
+    if (a = nil) then  begin
+        // Creo el nuevo nodo del árbol 
+        new(aux);
+        aux^.cod := cod;
+        aux^.HD := nil;
+        aux^.HI := nil;
 
-        // Creo el nuevo registro para el alumno.
-        alu.legajo := legajo;
-        alu.finales := exam;
+        // Agrego la venta al producto
+        // Como se que el producto es nuevo, inserto adelante el nuevo nodo.
+        AgregarAdelante(aux^.lista, dato);
 
-        // Nuevo arbol/nodo
-        new(a);
-        a^.dato:= alu; 
-        a^.HI:= nil; 
-        a^.HD:= nil;
+        // Asigno al nodo como raiz del árbol
+        a := aux;
     end
     else begin 
-        if (a^.dato.legajo = legajo) then
-            // Agrego un final a la lista de finales
-            InsertarOrdenado(a^.dato.finales, f)
-        else begin
-            if (legajo < a^.dato.legajo)
-            then InsertOrUpdate(a^.HI, legajo, f)
-            else InsertOrUpdate(a^.HD, legajo, f);
+        // Si estoy actualizando un nodo existente 
+        if (a^.cod = cod) then
+            InsertarOrdenado(a^.lista, dato)
+        else begin 
+            if (a^.cod > cod) then
+                InsertOrUpdateProductoVentas(a^.HI, cod, dato)
+            else
+                InsertOrUpdateProductoVentas(a^.HD, cod, dato);
         end;
     end;
 end;
 
 
-procedure CargarDatos(var a: arbol);
-    procedure leerFinal(var f: final);
-    begin 
-        write('Codigo de materia: '); readln(f.cod_materia);
-        write('Fecha final: '); readln(f.fecha);
-        write('Nota obtenida: '); readln(f.nota);
-        writeln;
-    end;
-var 
-    f: final;
-    legajo: integer;    
-begin 
-    write('Ingrese Nro de legajo: '); readln(legajo);
-    while (legajo <> 0) do begin 
-        leerFinal(f);
-        InsertOrUpdate(a, legajo, f);
 
-        write('Ingrese Nro de legajo: '); readln(legajo);
+procedure GenerarArboles(var a1: arbolVentas; var a2: arbolProductos; var a3: arbolProductosVentas);
+var 
+  v: venta;
+  p: productoVentas;
+begin 
+    { Inicializo todos los árboles }
+    a1 := nil; a2 := nil; a3 := nil;
+
+    { Cargo ventas hasta que se carga el producto 0 }
+    GenerarVenta(v);
+    p.fecha := v.fecha;
+    p.u_vendidas := v.u_vendidas;
+
+    while (v.cod <> 0) do begin 
+        InsertarVenta(a1, v);
+
+        InsertOrUpdate(a2, v.cod, v.u_vendidas);
+
+        InsertOrUpdateProductoVentas(a3, v.cod, p);
+
+        GenerarVenta(v);
+        p.fecha := v.fecha;
+        p.u_vendidas := v.u_vendidas;
     end;
 end;
 
 
+procedure ImprimirArbolVentas(a: arbolVentas);
+    procedure ImprimirVenta(v: venta);
+    begin 
+      writeln(v.cod, #9, v.fecha, #9, v.u_vendidas);
+    end;
 
-function CantidadLegajosImpar(a: arbol): integer;
-    function esPar(n: integer): boolean;
-    begin esPar := (n MOD 2 = 0); end;
+begin
+    if (a <> nil) then begin 
+        ImprimirArbolVentas(a^.HI);
+        ImprimirVenta(a^.dato);
+        ImprimirArbolVentas(a^.HD);
+        
+    end;
+end;
 
-var
-    cant: integer;
+
+procedure ImprimirArbolProductos(a: arbolProductos);
+    procedure ImprimirProducto(p: producto);
+    begin 
+        writeln(p.cod, #9, p.tot_u_vendidas);
+    end;
+
+begin 
+    if (a <> nil) then begin 
+        ImprimirArbolProductos(a^.HD);
+        ImprimirProducto(a^.dato);
+        ImprimirArbolProductos(a^.HI);
+    end;
+end;
+
+procedure ImprimirArbolProductosVentas(a: arbolProductosVentas);
+    procedure ImprimirListaProductos(l: l_ventas);
+    begin
+        while (l <> nil) do begin 
+            writeln(l^.dato.fecha, #9, l^.dato.u_vendidas);
+            l := l^.sig;
+        end;
+    end;
+
+
+    procedure ImprimirProducto(cod: integer; l: l_ventas );
+    begin
+        writeln('   Fecha     Unidades     (PROD: ', cod,')');
+        writeln('------------------------------------');
+        ImprimirListaProductos(l);
+        writeln;
+    end;
+begin 
+    if (a <> nil) then begin 
+        ImprimirArbolProductosVentas(a^.HD);
+        ImprimirProducto(a^.cod, a^.lista);
+        ImprimirArbolProductosVentas(a^.HI);
+    end;
+end;
+
+function ObtenerTotalVendidosFecha(a: arbolVentas; fecha: tipoFecha): integer;
+var cant: integer;
 begin 
     // Caso base, árbol vacío.
-    if (a = nil) then CantidadLegajosImpar := 0
+    if (a = nil) then ObtenerTotalVendidosFecha := 0
     else begin 
-        if (not esPar(a^.dato.legajo)) 
-        then cant := 1
-        else cant := 0; 
-        CantidadLegajosImpar := cant + CantidadLegajosImpar(a^.HI) + CantidadLegajosImpar(a^.HD);
+        if (a^.dato.fecha = fecha) 
+        then cant := a^.dato.u_vendidas
+        else cant := 0;
+
+        ObtenerTotalVendidosFecha := cant 
+              + ObtenerTotalVendidosFecha(a^.HD, fecha)
+              + ObtenerTotalVendidosFecha(a^.HI, fecha);
     end;
 end;
 
 
-procedure InformarHistorial(a: arbol);
-    procedure ImprimirNotas(l: listaFinales);
-    begin 
-        while(l <> nil) do begin 
-            if (l^.dato.nota >= 4) then
-                writeln('Materia: ', l^.dato.cod_materia, #9, ' Fecha: ', l^.dato.fecha, #9, ' Nota: ', l^.dato.nota:0:2);
+function GetCodigoTopProducto (a: arbolProductos): integer;
+	procedure MaxCodigo (a: arbolProductos; var maxCod, maxVentas: integer);
+		procedure ActualizarMaximo (p: producto; var maxCod, maxVentas: integer);
+		begin
+			if (p.tot_u_vendidas > maxVentas) then begin
+				maxVentas:= p.tot_u_vendidas;
+				maxCod:= p.cod;
+			end;
+		end;
+	
+	begin
+		if (a <> nil) then begin
+			if (a^.HI <> nil) then 
+				MaxCodigo(a^.HI, maxCod, maxVentas);
+			ActualizarMaximo (a^.dato, maxCod, maxVentas);
+			if (a^.HD <> nil) then
+				MaxCodigo(a^.HD, maxCod, maxVentas);
+		end;
+	end;
 
-            l := l^.sig;
-        end;
-        writeln;
-    end;
-begin 
-    if (a <> nil) then begin 
-        InformarHistorial(a^.HD);
-        writeln('Alumno: ', a^.dato.legajo);
-        writeln('--------------------------');
-        ImprimirNotas(a^.dato.finales);
-        InformarHistorial(a^.HI);
-    end;
-
+var
+	maxCod, maxVentas: integer;
+begin
+	maxVentas:= -1;
+	MaxCodigo(a, maxCod, maxVentas);
+	GetCodigoTopProducto := maxCod;
 end;
 
 
-procedure InformarPromediosSobre(a: arbol; prom: real);
-    function CalcularPromedio(l: listaFinales): real;
-    var 
-        aux: real;      // Acumulo las notas de los finales
-        tot: integer;   // Contador de la cantidad de finales
+function GetCodigoTopVentas (a: arbolProductosVentas): integer;
+
+    function ContarVentas(l: l_ventas):integer;
     begin 
-        aux := 0;
-        tot := 0;
-        while (l <> nil) do begin 
-            tot := tot + 1;
-            aux := aux + l^.dato.nota;
-
-            // Avanzo la lista
-            l := l^.sig;
+        if (l = nil) then 
+            ContarVentas := 0
+        else begin 
+            ContarVentas := l^.dato.u_vendidas + ContarVentas(l^.sig);
         end;
+    end;
 
-        if (tot > 0) 
-        then CalcularPromedio := aux / tot
-        else CalcularPromedio := 0;
+    procedure ActualizarMaximo (cod, vend: integer; var maxCod, maxVentas: integer);
+		begin
+			if (vend > maxVentas) then begin
+				maxVentas:= vend;
+				maxCod:= cod;
+			end;
+		end;
+
+	  procedure MaxCodigo (a: arbolProductosVentas; var maxCod, maxVentas: integer);
+    begin
+      if (a <> nil) then begin
+        if (a^.HI <> nil) then 
+          MaxCodigo(a^.HI, maxCod, maxVentas);
+
+        ActualizarMaximo (a^.cod, ContarVentas(a^.lista), maxCod, maxVentas);
+        if (a^.HD <> nil) then
+          MaxCodigo(a^.HD, maxCod, maxVentas);
+      end;
     end;
-var promedioAlumno: real;
-begin 
-    if (a <> nil) then begin 
-        InformarPromediosSobre(a^.HD, prom);
-        // Acción
-        promedioAlumno := CalcularPromedio(a^.dato.finales);
-        writeln('Alumno: ', a^.dato.legajo, #9, 'Promedio: ', promedioAlumno:0:2);
-        InformarPromediosSobre(a^.HI, prom);
-    end;
+
+var
+	maxCod, maxVentas: integer;
+begin
+    maxVentas:= -1;
+    MaxCodigo(a, maxCod, maxVentas);
+    GetCodigoTopVentas := maxCod;
 end;
 
 
 { PROGRAMA PRINCIPAL }
-var 
-  a: arbol;
-  prom: real;
+Var 
+    a1: arbolVentas;
+    a2: arbolProductos;
+    a3: arbolProductosVentas;
+    fecha: tipoFecha;
+    cantProdVendidos, codTopVentas: integer;
 
 Begin 
-    CargarDatos(a);
-    writeln('Cantidad de legajos con código impar: ', CantidadLegajosImpar(a));
-    InformarHistorial(a);
+    randomize;
+    GenerarArboles(a1, a2, a3);
+    writeln('Arbol de ventas cargado: ');
     writeln;
-    write('Ingrese el promedio para buscar alumnos: ');
-    readln(prom);
-    InformarPromediosSobre(a, prom);
+    writeln('  ID      Fecha       Ventas');
+    writeln('------------------------------');
+    ImprimirArbolVentas(a1);
     writeln;
+    writeln('Arbol de productos: ');
+    writeln;
+    writeln('ID    Ventas');
+    writeln('--------------');
+    ImprimirArbolProductos(a2);
+    writeln;
+
+    writeln('Arbol de productos con lista de ventas: ');
+    ImprimirArbolProductosVentas(a3);
+    writeln;
+
+    write('Ingrese fecha de busqueda: '); readln(fecha);
+    writeln;
+    
+    cantProdVendidos := ObtenerTotalVendidosFecha(a1, fecha);
+    writeln('Cantidad de de productos vendidos en la fecha ', fecha, ': ', cantProdVendidos);
+    writeln;
+
+    codTopVentas := GetCodigoTopProducto(a2);
+    writeln('Codigo del producto con mayor cantidad de ventas (Arbol 2): ', codTopVentas);
+    writeln;
+
+    codTopVentas := GetCodigoTopVentas(a3);
+    writeln('Codigo del producto con mayor cantidad de ventas (Arbol 3): ', codTopVentas);
+    writeln;
+
+
 End.
+

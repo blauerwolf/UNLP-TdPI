@@ -400,17 +400,23 @@ Var
     a3: arbolProductosVentas;
     fecha: tipoFecha;
     cantProdVendidos, codTopVentas: integer;
+
 Begin 
     randomize;
     GenerarArboles(a1, a2, a3);
     writeln('Arbol de ventas cargado: ');
     writeln;
+    writeln('  ID      Fecha       Ventas');
+    writeln('------------------------------');
     ImprimirArbolVentas(a1);
     writeln;
     writeln('Arbol de productos: ');
     writeln;
+    writeln('ID    Ventas');
+    writeln('--------------');
     ImprimirArbolProductos(a2);
     writeln;
+
     writeln('Arbol de productos con lista de ventas: ');
     ImprimirArbolProductosVentas(a3);
     writeln;
@@ -421,9 +427,11 @@ Begin
     cantProdVendidos := ObtenerTotalVendidosFecha(a1, fecha);
     writeln('Cantidad de de productos vendidos en la fecha ', fecha, ': ', cantProdVendidos);
     writeln;
+
     codTopVentas := GetCodigoTopProducto(a2);
     writeln('Codigo del producto con mayor cantidad de ventas (Arbol 2): ', codTopVentas);
     writeln;
+
     codTopVentas := GetCodigoTopVentas(a3);
     writeln('Codigo del producto con mayor cantidad de ventas (Arbol 3): ', codTopVentas);
     writeln;
