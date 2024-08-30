@@ -9,7 +9,7 @@
   legajo impar.
   ✅ c. Un módulo que reciba la estructura generada en a. e informe, para cada alumno, su legajo y
   su cantidad de finales aprobados (nota mayor o igual a 4).
-  c. Un módulo que reciba la estructura generada en a. y un valor real. Este módulo debe
+  ✅ c. Un módulo que reciba la estructura generada en a. y un valor real. Este módulo debe
   retornar los legajos y promedios de los alumnos cuyo promedio supera el valor ingresado.
 }
 
