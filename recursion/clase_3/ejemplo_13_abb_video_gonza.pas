@@ -155,6 +155,6 @@ end;
 var 
     a: arbol;
 
-begin 
+Begin 
 
-end.
+End.

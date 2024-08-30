@@ -34,7 +34,7 @@ type
 
 procedure leerCliente(var c: cliente);
 begin
-    writeln('Ingrese el código entre 1 y 1000'); readln(c.cod);
+    writeln('Ingrese el código entre 1 y 1000 (Fin = 1000'); readln(c.cod);
     writeln('Ingrese el email'); readln(c.email);
     writeln('Ingrese la cant. de mesajes sin leer'); readln(c.sin_leer);
 end;
@@ -124,7 +124,7 @@ var
 begin 
     almacenarClientes(a);
     writeln('Ingrese un código de cliente'); readln(cod);
-    writeln(cantidadDeCorreosSinLeer(cod, a));
+    writeln('Correos sin leer: ', cantidadDeCorreosSinLeer(cod, a));
     imprimirDeMayorAMenor(a);
     writeln('Ingrese un email'); readln(email);
     if (existeEmail(a, email)) then 
