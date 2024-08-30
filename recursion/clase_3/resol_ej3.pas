@@ -223,8 +223,10 @@ begin
         InformarPromediosSobre(a^.HD, prom);
         // Acción
         promedioAlumno := CalcularPromedio(a^.dato.finales);
-        writeln('Alumno: ', a^.dato.legajo, #9, 'Promedio: ', promedioAlumno:0:2);
-        InformarPromediosSobre(a^.HI, prom);
+        if (promedioAlumno >= prom) then begin 
+            writeln('Alumno: ', a^.dato.legajo, #9, 'Promedio: ', promedioAlumno:0:2);
+            InformarPromediosSobre(a^.HI, prom);
+        end;
     end;
 end;
 
