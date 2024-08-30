@@ -1,6 +1,6 @@
 program recursion_factorial;
 
-function factorial (num: integer): integer;
+function factorial (num: longint): longint;
 begin
     if (num = 0) then 
         factorial := 1
@@ -9,9 +9,9 @@ begin
     
 end;
 
-var n: integer;
+var n: longint;
 
 begin 
-    n := 5;
+    write('Ingresar numero para calcular factorial: '); readln(n);
     writeln('El factorial de ', n, ' es: ', factorial(n));
 end.
