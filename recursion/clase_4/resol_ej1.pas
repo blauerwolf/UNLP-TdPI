@@ -9,23 +9,24 @@
 
 Program ImperativoClase4;
 
-type venta = record
-               codigoVenta: integer;
-               codigoProducto: integer;
-               cantUnidades: integer;
-               precioUnitario: real;
-             end;
-     productoVendido = record
-                         codigo: integer;
-                         cantTotalUnidades: integer;
-                         montoTotal: real;
-                       end;
-     arbol = ^nodoArbol;
-     nodoArbol = record
-                    dato: productoVendido;
-                    HI: arbol;
-                    HD: arbol;
-                 end;
+type 
+    venta = record
+        codigoVenta: integer;
+        codigoProducto: integer;
+        cantUnidades: integer;
+        precioUnitario: real;
+    end;
+    productoVendido = record
+        codigo: integer;
+        cantTotalUnidades: integer;
+        montoTotal: real;
+    end;
+    arbol = ^nodoArbol;
+    nodoArbol = record
+        dato: productoVendido;
+        HI: arbol;
+        HD: arbol;
+    end;
      
 procedure ModuloA (var a: arbol);
 { Almacene los productos vendidos en una estructura eficiente para la búsqueda por código de producto. De cada producto deben quedar almacenados la cantidad total 
@@ -146,8 +147,21 @@ procedure ModuloD (a: arbol);
 { Retornar la cantidad de códigos que existen en el árbol que son menores que un valor que se recibe como parámetro }
   
   function CantidadDeCodigosMenores (a: arbol; cod: integer): integer;
+  var cant: integer;
   begin
     { COMPLETAR }
+
+    // Caso base, el árbol está vacío.
+    if (a = nil) then CantidadDeCodigosMenores := 0
+    else begin 
+      if (a^.dato.codigo < cod) 
+      then cant := 1
+      else cant := 0;
+
+      CantidadDeCodigosMenores := cant 
+                                  + CantidadDeCodigosMenores(a^.HD, cod)
+                                  + CantidadDeCodigosMenores(a^.HI, cod);
+    end;
   end;
    
 var cantidad, unCodigo: integer;
@@ -171,10 +185,24 @@ procedure ModuloE (a: arbol);
 comprendidos entre los dos valores recibidos (sin incluir). }
   
   function ObtenerMontoTotalEntreDosCodigos (a: arbol; codigo1, codigo2: integer): real;
+  var tot: real;
   begin
     { COMPLETAR }
+
+    // Caso base, árbol vacío.
+    if (a = nil) then ObtenerMontoTotalEntreDosCodigos := 0
+    else begin 
+      if (a^.dato.codigo > codigo1) and (a^.dato.codigo < codigo2) 
+      then tot := a^.dato.montoTotal 
+      else tot := 0;
+
+      ObtenerMontoTotalEntreDosCodigos := tot
+                                          + ObtenerMontoTotalEntreDosCodigos(a^.HD, codigo1, codigo2)
+                                          + ObtenerMontoTotalEntreDosCodigos(a^.HI, codigo1, codigo2);
+    end;
   end;
    
+{ PROGRAMA PRINCIPAL }
 var codigo1, codigo2: integer;
     montoTotal: real;
 begin
@@ -191,7 +219,7 @@ begin
   then writeln ('No hay codigos entre ', codigo1, ' y ', codigo2)
   else begin
          writeln;
-         writeln ('El monto total entre el codigo', codigo1, ' y el codigo : ', codigo2, ' es: ', montoTotal); 
+         writeln ('El monto total entre el codigo:', codigo1, ' y el codigo: ', codigo2, ' es: ', montoTotal:0:2); 
          writeln;
        end;
   writeln;
@@ -205,8 +233,7 @@ Begin
   ModuloA (a);
   ModuloB (a);
   ModuloC (a);
-  {
-    ModuloD (a);
-    ModuloE (a);
-  }   
+  ModuloD (a);
+  ModuloE (a);
+  
 End.
