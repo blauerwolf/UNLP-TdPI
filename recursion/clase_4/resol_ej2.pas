@@ -1,13 +1,13 @@
 {
     Descargar el programa ImperativoEjercicioClase3.pas de la clase anterior e incorporar lo
     necesario para:
-    i. Informar el número de socio más grande. Debe invocar a un módulo recursivo que
+    ✅ i. Informar el número de socio más grande. Debe invocar a un módulo recursivo que
     retorne dicho valor.
-    ii. Informar los datos del socio con el número de socio más chico. Debe invocar a un
+    ✅ ii. Informar los datos del socio con el número de socio más chico. Debe invocar a un
     módulo recursivo que retorne dicho socio.
-    iii. Leer un valor entero e informar si existe o no existe un socio con ese valor. Debe
+    ✅ iii. Leer un valor entero e informar si existe o no existe un socio con ese valor. Debe
     invocar a un módulo recursivo que reciba el valor leído y retornar verdadero o falso.
-    iv. Leer e informar la cantidad de socios cuyos códigos se encuentran comprendidos
+    ✅ iv. Leer e informar la cantidad de socios cuyos códigos se encuentran comprendidos
     entre los valores leídos. Debe invocar a un módulo recursivo que reciba los valores
     leídos y retorne la cantidad solicitada.
 }
@@ -228,21 +228,23 @@ begin InformarPromedioDeEdad := suma / total; end;
 // Informar el número de socio más grande. Debe invocar a un módulo recursivo que
 // retorne dicho valor.
 procedure ModuloA(a: arbol);
-    procedure MaxCodigo (a: arbol; var maxCod: integer);
-		procedure ActualizarMaximo (c: integer; var maxCod: integer);
-		begin
-			if (c > maxCod) then maxCod := c;
-		end;
-	
-	begin
-		if (a <> nil) then begin
-			if (a^.HI <> nil) then 
-				MaxCodigo(a^.HI, maxCod);
-			ActualizarMaximo (a^.dato, maxCod);
-			if (a^.HD <> nil) then
-				MaxCodigo(a^.HD, maxCod);
-		end;
-	end;
+    procedure ActualizarMaximo (s: socio; var maxCod: integer);
+    begin
+      if (s.numero > maxCod) then maxCod := s.numero;
+    end;
+
+
+    procedure MaxCodigo (a: arbol; var maxCod: integer);  
+    begin
+      if (a = nil) then maxCod := 0 else
+      if (a <> nil) then begin
+        if (a^.HI <> nil) then 
+          MaxCodigo(a^.HI, maxCod);
+        ActualizarMaximo (a^.dato, maxCod);
+        if (a^.HD <> nil) then
+          MaxCodigo(a^.HD, maxCod);
+      end;
+    end;
 
 
     function ObtenerCodigoMasGrande(a: arbol): integer;
@@ -250,38 +252,132 @@ procedure ModuloA(a: arbol);
     begin 
         // Caso base: el árbol está vacío.
         if (a = nil) then ObtenerCodigoMasGrande := 0
-        else begin 
-            maxCod := a^.dato.numero;
+        else begin
+            MaxCodigo(a, maxCod); 
+            ObtenerCodigoMasGrande := maxCod;
         end;
     end;
 
 
-var maxCodigo: integer;
+var maxCod: integer;
 begin 
     writeln;
     writeln ('----- Modulo A ----->');
     writeln;
-    maxCodigo := ObtenerCodigoMasGrande(a);
 
-    maxVentas:= -1;
-	MaxCodigo(a, maxCod, maxVentas);
-	GetCodigoTopProducto := maxCod;
-
+    maxCod := 0;
+	  MaxCodigo(a, maxCod);
+    writeln('Codigo mas grande: ', maxCod);
+    writeln;
 end;
 
 
+// Informar los datos del socio con el número de socio más chico. Debe invocar a un
+// módulo recursivo que retorne dicho socio.
 procedure ModuloB(a: arbol);
+    procedure ImprimirSocio(s: socio);
+    begin 
+        writeln('Numero: ', s.numero, ' - Nombre: ', s.nombre, ' - Edad: ', s.edad);
+    end;
+
+    procedure ActualizarMinimo (s: socio; var minCod: integer; var minSocio: socio);
+    begin
+      if (s.numero < minCod) then begin 
+        minCod := s.numero;
+        minSocio := s;
+      end;
+    end;
+
+    procedure MinCodigo (a: arbol; var minCod: integer; var s: socio);  
+    begin
+      if (a <> nil) then begin
+        if (a^.HI <> nil) then 
+          MinCodigo(a^.HI, minCod, s);
+        ActualizarMinimo (a^.dato, minCod, s);
+        if (a^.HD <> nil) then
+          MinCodigo(a^.HD, minCod, s);
+      end;
+    end;
+
+var 
+  minCod: integer;
+  minSocio: socio;
 begin 
+    writeln;
+    writeln('----- Modulo B ----->');
+    writeln;
+    MinCodigo(a, minCod, minSocio);
+    writeln('Datos del socio con el codigo mas chico: ');
+    ImprimirSocio(minSocio);
+    writeln;
 end;
 
-
+// Leer un valor entero e informar si existe o no existe un socio con ese valor. Debe
+//  invocar a un módulo recursivo que reciba el valor leído y retornar verdadero o falso.
 procedure ModuloC(a: arbol);
+    function ExisteCodigoSocio(a: arbol; codSocio: integer): boolean;
+    var existe: boolean;
+    begin 
+        if (a = nil) then 
+            ExisteCodigoSocio := false
+        else begin 
+            if (a^.dato.numero = codSocio) then 
+                ExisteCodigoSocio := true
+            else begin 
+                existe := ExisteCodigoSocio(a^.HI, codSocio);
+                if (not existe) then 
+                    existe := ExisteCodigoSocio(a^.HD, codSocio);
+                
+                ExisteCodigoSocio := existe;
+            end;
+        end;
+    end;
+var 
+    numSocio: integer;
+    existe: boolean;
 begin 
+    writeln;
+    writeln('----- Modulo C ----->');
+    writeln;
+    write('Ingrese un numero de socio a buscar: ');
+    readln(numSocio);
+    existe := ExisteCodigoSocio(a, numSocio);
+
+    if (existe) then writeln('El numero de socio ', numSocio, ' se encuentra registrado')
+    else writeln('El numero de socio ', numSocio, ' NO se encuentra registrado');
+
 end;
 
-
+// Leer e informar la cantidad de socios cuyos códigos se encuentran comprendidos
+// entre los valores leídos. Debe invocar a un módulo recursivo que reciba los valores
+// leídos y retorne la cantidad solicitada.
 procedure ModuloD(a: arbol);
+    function CantidadSociosEntreCodigos(a: arbol; codigo1, codigo2: integer): integer;
+    var cant: integer;
+    begin
+        // Caso base: arbol vacio:
+        if (a = nil) then CantidadSociosEntreCodigos := 0
+        else begin 
+            if (a^.dato.numero > codigo1) and (a^.dato.numero < codigo2) then
+                cant := 1
+            else cant := 0;
+
+            CantidadSociosEntreCodigos := cant 
+                                          + CantidadSociosEntreCodigos(a^.HI, codigo1, codigo2)
+                                          + CantidadSociosEntreCodigos(a^.HD, codigo1, codigo2);
+        end; 
+    end;
+
+var codigo1, codigo2, cantidad: integer;
 begin 
+    writeln;
+    writeln('----- Modulo D ----->');
+    writeln;
+    write('Ingrese codigo base: '); readln(codigo1);
+    write('Ingrese codigo tope: '); readln(codigo2);
+    cantidad := CantidadSociosEntreCodigos(a, codigo1, codigo2);
+    writeln('Socios con codigo entre ', codigo1, ' y ', codigo2, ': ', cantidad);
+    
 end;
 
 { PROGRAMA PRINCIPAL }
