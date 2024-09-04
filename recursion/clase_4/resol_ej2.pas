@@ -288,8 +288,9 @@ var
   minCod: integer;
   minSocio: socio;
   encontre: boolean;
+
 begin
-    minCod := 99999;
+    minCod := 32767;
     encontre := false;
     writeln;
     writeln('----- Modulo B ----->');
@@ -314,9 +315,9 @@ procedure ModuloC(a: arbol);
             if (a^.dato.numero = codSocio) then 
                 ExisteCodigoSocio := true
             else begin 
-                existe := ExisteCodigoSocio(a^.HI, codSocio);
-                if (not existe) then 
-                    existe := ExisteCodigoSocio(a^.HD, codSocio);
+                if (codSocio < a^.dato.numero) then 
+                    existe := ExisteCodigoSocio(a^.HI, codSocio)
+                else existe := ExisteCodigoSocio(a^.HD, codSocio);
                 
                 ExisteCodigoSocio := existe;
             end;
