@@ -13,3 +13,46 @@
         e. Retornar el monto total entre todos los códigos de productos comprendidos entre dos
         valores recibidos (sin incluir) como parámetros.
 }
+
+program Klass3U3;
+
+type
+    producto = record 
+        id: integer;
+        tot_vendidas: integer;
+        monto_total: real;
+    end;
+
+    arbolProductos = ^nodoProductos 
+    nodoProductos = record 
+        dato: producto;
+        HI: arbolProductos;
+        HD: arbolProductos;
+    end;
+
+    venta = record 
+        id: integer;
+        productoId: integer,
+        cant_vendidas: integer;
+        precio_unitario: real;
+    end;
+
+procedure LeerVenta(var v: venta);
+begin 
+    
+end;
+
+    
+
+
+
+
+
+
+
+{ PROGRAMA PRINCIPAL }
+var 
+
+Begin 
+
+End.
