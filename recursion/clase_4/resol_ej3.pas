@@ -12,37 +12,105 @@
         que se recibe como parámetro.
         e. Retornar el monto total entre todos los códigos de productos comprendidos entre dos
         valores recibidos (sin incluir) como parámetros.
+
+        REGISTROS:
+         -----------------        -----------------
+        |     producto    |      |      venta      |
+        |-----------------|      |-----------------|
+        | id              |      | id              |
+        | tot_vendidas    |      | productoId      |
+        | monto_total     |      | cant_vendidas   |
+        | ventas (lista)  |      | precio_unitario | 
+         =================        =================
+
+        LISTAS 
+         -----------------        -------------------- 
+        | nodoLista       |      | lista = ^nodoLista |
+        |-----------------|       --------------------
+        | dato: venta     |
+        | sig: lista      |
+         =================
+              
+
+        ARBOLES:
+         -----------------       
+        |  nodoProductos  |      
+        |-----------------|
+        | dato            |
+        | HI              |
+        | HD              |
+         =================
 }
 
 program Klass3U3;
 
 type
-    producto = record 
-        id: integer;
-        tot_vendidas: integer;
-        monto_total: real;
-    end;
-
-    arbolProductos = ^nodoProductos 
-    nodoProductos = record 
-        dato: producto;
-        HI: arbolProductos;
-        HD: arbolProductos;
-    end;
-
     venta = record 
-        id: integer;
-        productoId: integer,
+        id: integer;    // Redundante?
+        productoId: integer;
         cant_vendidas: integer;
         precio_unitario: real;
     end;
 
-procedure LeerVenta(var v: venta);
-begin 
-    
-end;
+    lista = ^nodoLista;
+
+    producto = record 
+        id: integer;
+        tot_vendidas: integer;
+        monto_total: real;
+        ventas: lista;
+    end;
+
+    nodoLista = record 
+        dato: producto;
+        sig: lista;
+    end;
 
     
+
+    arbol = ^nodoProductos;
+
+    nodoProductos = record 
+        dato: producto;
+        HI: arbol;
+        HD: arbol;
+    end;
+
+    
+
+procedure LeerVenta(var v: venta);
+begin 
+    write('Cod Venta: ', #9); readln(v.id);
+    write('Cod Producto: ', #9); readln(v.productoId);
+    write('Cant Vendidos: ', #9); readln(v.cant_vendidas);
+    write('Precio unit: ', #9); readln(v.precio_unitario);
+end;
+
+
+procedure ModuloA(var a:arbol);
+var v: venta;
+begin
+    LeerVenta(v);
+end;
+
+procedure ModuloB(a: arbol);
+begin 
+end;
+
+
+procedure ModuloC(a: arbol);
+begin 
+end;
+
+
+procedure ModuloD(a: arbol);
+begin 
+end;
+
+
+procedure ModuloE(a: arbol);
+begin 
+end;
 
 
 
@@ -52,7 +120,11 @@ end;
 
 { PROGRAMA PRINCIPAL }
 var 
-
+    a: arbol;
 Begin 
-
+    ModuloA (a);
+    ModuloB (a);
+    ModuloC (a);
+    ModuloD (a);
+    ModuloE (a);
 End.
