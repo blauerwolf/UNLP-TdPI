@@ -1,14 +1,14 @@
 {
-    a. Almacenar los productos vendidos en una estructura eficiente para la búsqueda por código de producto. De cada producto deben quedar almacenados su código, la cantidad total de unidades vendidas y el monto total. De cada venta se cargan código de venta, código del producto vendido, cantidad de unidades vendidas y precio unitario. El ingreso de las ventas finaliza cuando se lee el código de venta 0.
-    b. Imprimir el contenido del árbol ordenado por código de producto.
-    c. Retornar el menor código de producto.
-    d. Retornar la cantidad de códigos que existen en el árbol que son menores que un valor que se recibe como parámetro.
-    e. Retornar el monto total entre todos los códigos de productos comprendidos entre dos valores recibidos (sin incluir) como parámetros.
+    ✅ a. Almacenar los productos vendidos en una estructura eficiente para la búsqueda por código de producto. De cada producto deben quedar almacenados su código, la cantidad total de unidades vendidas y el monto total. De cada venta se cargan código de venta, código del producto vendido, cantidad de unidades vendidas y precio unitario. El ingreso de las ventas finaliza cuando se lee el código de venta 0.
+    ✅ b. Imprimir el contenido del árbol ordenado por código de producto.
+    ✅ c. Retornar el menor código de producto.
+    ✅ d. Retornar la cantidad de códigos que existen en el árbol que son menores que un valor que se recibe como parámetro.
+    ✅ e. Retornar el monto total entre todos los códigos de productos comprendidos entre dos valores recibidos (sin incluir) como parámetros.
 
 }
 
 Program ImperativoClase4;
-
+7
 type 
     venta = record
         codigoVenta: integer;

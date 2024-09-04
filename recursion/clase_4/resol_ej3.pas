@@ -81,9 +81,16 @@ type
 procedure LeerVenta(var v: venta);
 begin 
     write('Cod Venta: ', #9); readln(v.id);
-    write('Cod Producto: ', #9); readln(v.productoId);
-    write('Cant Vendidos: ', #9); readln(v.cant_vendidas);
-    write('Precio unit: ', #9); readln(v.precio_unitario);
+    if (v.id <> -1) then begin 
+        write('Cod Producto: ', #9); readln(v.productoId);
+        write('Cant Vendidos: ', #9); readln(v.cant_vendidas);
+        write('Precio unit: ', #9); readln(v.precio_unitario);
+    end;
+end;
+
+procedure CargarVentas();
+begin 
+    
 end;
 
 

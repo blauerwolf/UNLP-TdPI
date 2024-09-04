@@ -12,6 +12,8 @@
     leídos y retorne la cantidad solicitada.
 }
 
+// TODO: Utilizar la búsqueda por nodos ordenados en lugar de recorrer todo el árbol
+
 
 Program ImperativoClase3;
 
@@ -39,7 +41,9 @@ nombre y edad. La carga finaliza con el numero de socio 0 y el arbol debe quedar
 aleatoriamente. }
 
   Procedure CargarSocio (var s: socio);
-  var vNombres:array [0..9] of string= ('Ana', 'Jose', 'Luis', 'Ema', 'Ariel', 'Pedro', 'Lena', 'Lisa', 'Martin', 'Lola'); 
+  var 
+    vNombres: array [0..9] of string = ('Ana', 'Jose', 'Luis', 'Ema', 'Ariel', 'Pedro', 'Lena', 'Lisa', 'Martin', 'Lola'); 
+    i: integer;
   
   begin
     s.numero:= random (51) * 100;
@@ -48,6 +52,10 @@ aleatoriamente. }
            s.nombre:= vNombres[random(10)];
            s.edad:= 12 + random (79);
          end;
+
+    for i := 0 to 9 do 
+      write('| ', vNombres[i], ' ');
+      writeln;
   end;  
   
   Procedure InsertarElemento (var a: arbol; elem: socio);
@@ -228,33 +236,16 @@ begin InformarPromedioDeEdad := suma / total; end;
 // Informar el número de socio más grande. Debe invocar a un módulo recursivo que
 // retorne dicho valor.
 procedure ModuloA(a: arbol);
-    procedure ActualizarMaximo (s: socio; var maxCod: integer);
-    begin
-      if (s.numero > maxCod) then maxCod := s.numero;
-    end;
 
-
-    procedure MaxCodigo (a: arbol; var maxCod: integer);  
-    begin
-      if (a = nil) then maxCod := 0 else
-      if (a <> nil) then begin
-        if (a^.HI <> nil) then 
-          MaxCodigo(a^.HI, maxCod);
-        ActualizarMaximo (a^.dato, maxCod);
-        if (a^.HD <> nil) then
-          MaxCodigo(a^.HD, maxCod);
-      end;
-    end;
-
-
+    // Nota: la carga finaliza en 0, ese valor está fuera de los posibles.
     function ObtenerCodigoMasGrande(a: arbol): integer;
-    var maxCod: integer;
     begin 
-        // Caso base: el árbol está vacío.
         if (a = nil) then ObtenerCodigoMasGrande := 0
         else begin
-            MaxCodigo(a, maxCod); 
-            ObtenerCodigoMasGrande := maxCod;
+            if (a^.HD = nil) then 
+                ObtenerCodigoMasGrande := a^.dato.numero
+            else 
+                ObtenerCodigoMasGrande := ObtenerCodigoMasGrande(a^.HD);
         end;
     end;
 
@@ -266,7 +257,7 @@ begin
     writeln;
 
     maxCod := 0;
-	  MaxCodigo(a, maxCod);
+	  maxCod := ObtenerCodigoMasGrande(a);
     writeln('Codigo mas grande: ', maxCod);
     writeln;
 end;
@@ -280,35 +271,34 @@ procedure ModuloB(a: arbol);
         writeln('Numero: ', s.numero, ' - Nombre: ', s.nombre, ' - Edad: ', s.edad);
     end;
 
-    procedure ActualizarMinimo (s: socio; var minCod: integer; var minSocio: socio);
-    begin
-      if (s.numero < minCod) then begin 
-        minCod := s.numero;
-        minSocio := s;
-      end;
-    end;
-
-    procedure MinCodigo (a: arbol; var minCod: integer; var s: socio);  
-    begin
-      if (a <> nil) then begin
-        if (a^.HI <> nil) then 
-          MinCodigo(a^.HI, minCod, s);
-        ActualizarMinimo (a^.dato, minCod, s);
-        if (a^.HD <> nil) then
-          MinCodigo(a^.HD, minCod, s);
-      end;
+    // Aprovecho que el árbol está ordenado. Rama izquierda.
+    procedure SocioMinCod(a: arbol; var encontre: boolean; var s: socio);
+    begin 
+        if (a = nil) then
+            encontre := false
+        else begin 
+            if (a^.HI = nil) then begin 
+                encontre := true;
+                s := a^.dato;
+            end else SocioMinCod(a^.HI, encontre, s);
+        end;
     end;
 
 var 
   minCod: integer;
   minSocio: socio;
-begin 
+  encontre: boolean;
+begin
+    minCod := 99999;
+    encontre := false;
     writeln;
     writeln('----- Modulo B ----->');
     writeln;
-    MinCodigo(a, minCod, minSocio);
-    writeln('Datos del socio con el codigo mas chico: ');
-    ImprimirSocio(minSocio);
+    SocioMinCod(a, encontre, minSocio);
+    if (encontre) then begin 
+      writeln('Datos del socio con el codigo mas chico: ');
+      ImprimirSocio(minSocio);
+    end else writeln('Sin resultados');
     writeln;
 end;
 
