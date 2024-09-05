@@ -231,7 +231,9 @@ procedure ModuloC(a: arbol);
     var max, cod: integer;
     begin 
         // Caso base: arbol vacio
-        if (a = nil) then writeln(cod)
+        if (a = nil) then 
+          writeln(cod)
+
         else begin
           cod := a^.dato.id;
           max := a^.dato.tot_vendidas;
