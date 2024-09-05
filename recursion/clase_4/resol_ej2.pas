@@ -115,7 +115,7 @@ end;
 procedure InformarNumeroSocioConMasEdad (a: arbol);
 { Informar el numero de socio con mayor edad. Debe invocar a un modulo recursivo que retorne dicho valor.  }
 
-     procedure actualizarMaximo(var maxValor,maxElem : integer; nuevoValor, nuevoElem : integer);
+  procedure actualizarMaximo(var maxValor,maxElem : integer; nuevoValor, nuevoElem : integer);
 	begin
 	  if (nuevoValor >= maxValor) then
 	  begin
