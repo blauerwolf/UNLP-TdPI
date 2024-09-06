@@ -1,1 +1,2 @@
-  minCod: integer;
+writeln('Prod',#9, 'Tot.vendido', #9, 'Monto tot.');
+    writeln('------------------------------------------------------------');

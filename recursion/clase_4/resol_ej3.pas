@@ -95,23 +95,20 @@ procedure ModuloA(var a:arbol);
     end;
 
     procedure CargarVentas(var a: arbol);
-        // Inserta un elemento al final de la lista de ventas.
-        procedure AgregarAtras(var L, ULT: lista; dato: venta);
-        var 
-        nue: lista;
 
-        Begin 
-        new (nue);          { Creo el nodo }
-        nue^.dato := dato;  { Cargo el dato }
-        nue^.sig := nil;    { Inicializo enlace en nil }
 
-        if (L = nil) then   { Si la lista está vacía }
-            L := nue          { Actualizo el inicio }
-        else                { si la lista no está vacía }
-            ULT^.sig := nue;  { Realizo enlace con el último }
-        
-        ULT := nue;         { Actualizo el último }
+        procedure AgregarAdelante(var l:lista; dato: venta);
+        var
+            nue: lista;
+
+        begin
+            new(nue);
+            nue^.dato := dato;
+            nue^.sig := l;
+            l := nue;
         end;
+    
+        
 
         // Actualiza los totales de ventas para el producto en cuestión.
         procedure ActualizarTotales(var a: arbol; v: venta);
@@ -138,9 +135,11 @@ procedure ModuloA(var a:arbol);
                 aux^.dato.ventas := nil;     { Inicializo la lista de ventas }
                 aux^.HD := nil;
                 aux^.HI := nil;
+
+                ULT := nil;
                 
                 // Cargo la venta al producto:
-                AgregarAtras(aux^.dato.ventas, ULT, v);
+                AgregarAdelante(aux^.dato.ventas, v);
 
                 // Actualizo los totales de compra del producto
                 ActualizarTotales(aux, v);
@@ -151,7 +150,7 @@ procedure ModuloA(var a:arbol);
             else begin
                 // Si estoy actualizando un nodo existente 
                 if (a^.dato.id = idProducto) then begin
-                    AgregarAtras(a^.dato.ventas, ULT, v);
+                    AgregarAdelante(a^.dato.ventas, v);
                     ActualizarTotales(a, v);
                 end
                 else begin 
@@ -192,8 +191,27 @@ end;
 // Imprimir el contenido del árbol ordenado por código de producto.
 procedure ModuloB(a: arbol);
     procedure ImprimirProducto(p: producto);
-    begin 
+    begin
+        //writeln;
+        //writeln('Prod',#9, 'Tot.vendido', #9, 'Monto tot.');
+        //writeln('------------------------------------------------------------');
         writeln(p.id, #9, p.tot_vendidas, #9, #9, p.monto_total:0:2);
+        //writeln;
+    end;
+
+    // No pide imprimir ventas, pero lo guardo igual en una lista
+    procedure ImprimirVentas(l: lista);
+    begin
+        if (l <> nil) then begin
+            writeln('Cod.Venta', #9, 'Cant.Vendidas', #9, 'Prec.unit');
+            writeln('------------------------------------------------------------');
+        end;
+
+        while (l <> nil) do begin 
+            writeln(l^.dato.id, #9, #9, l^.dato.cant_vendidas, #9, #9, l^.dato.precio_unitario:0:2);
+
+            l := l^.sig;
+        end; 
     end;
 
 
@@ -202,6 +220,7 @@ procedure ModuloB(a: arbol);
         if (a <> nil) then begin 
             ImprimirArbol(a^.HI);
             ImprimirProducto(a^.dato);
+            //ImprimirVentas(a^.dato.ventas);
             ImprimirArbol(a^.HD);
         end;
     end;
@@ -212,6 +231,7 @@ begin
     writeln('----- Modulo B ----->');
     writeln;
     writeln('Prod',#9, 'Tot.vendido', #9, 'Monto tot.');
+    writeln('------------------------------------------------------------');
     ImprimirArbol(a);
 
 end;
@@ -227,14 +247,15 @@ procedure ModuloC(a: arbol);
         end;
     end;
     
-    procedure ImprimirCodigoTopVentas(a: arbol);
-    var max, cod: integer;
+    procedure ImprimirCodigoTopVentas(a: arbol; max: integer);
+    var cod: integer;
     begin 
         // Caso base: arbol vacio
         if (a = nil) then 
-          writeln(cod)
+          // Devuelvo objeto vacío
 
         else begin
+          // Asumo el máximo con el nodo actual
           cod := a^.dato.id;
           max := a^.dato.tot_vendidas;
 
