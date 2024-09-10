@@ -341,6 +341,35 @@ begin
 end;
 
 
+// Un módulo recursivo que reciba la estructura generada en i. y un número de socio. El
+// módulo debe retornar la cantidad de préstamos realizados a dicho socio
+procedure ModuloD(a1: arbolA);
+    function GetTotalPrestamos(a: arbolA; socioId: integer): integer;
+    var suma: integer;
+    begin 
+        if (a = nil) then GetTotalPrestamos := 0
+        else begin 
+            if (a^.dato.socioId = socioId) 
+            then suma := 1
+            else suma := 0;
+
+            GetTotalPrestamos := suma 
+                + GetTotalPrestamos(a^.HI, socioId)
+                + GetTotalPrestamos(a^.HD, socioId);
+
+        end;
+    end;
+
+var socioId, total: integer;
+begin 
+    writeln;
+    writeln('----- Modulo D ----->');
+    writeln;
+    write('Ingrese numero de socio a buscar: ');
+    readln(socioId);
+    total := GetTotalPrestamos(a1, socioId);
+end;
+
 var 
     a1: arbolA;
     a2: arbolB;
@@ -348,6 +377,7 @@ Begin
     ModuloA(a1, a2);
     ModuloB(a1);
     ModuloC(a2);
+    ModuloD(a1);
 
 
 End.
