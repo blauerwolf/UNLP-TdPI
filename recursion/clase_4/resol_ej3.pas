@@ -283,10 +283,32 @@ end;
 // Retornar la cantidad de códigos que existen en el árbol que son menores que un valor
 // que se recibe como parámetro.
 procedure ModuloD(a: arbol);
+    function GetTotalProductsBelowGivenId(a: arbol; cod: integer): integer;
+    var cont: integer;
+    begin 
+        // Caso base: arbol vacio, devuelvo 0
+        if (a = nil) then GetTotalProductsBelowGivenId := 0
+        else begin
+            if (a^.dato.id < cod) then
+                cont := 1
+            else cont := 0;
+
+            GetTotalProductsBelowGivenId := cont 
+                                + GetTotalProductsBelowGivenId(a^.HI, cod) 
+                                + GetTotalProductsBelowGivenId(a^.HD, cod);
+        end;
+    end;
+
+var cod, cant: integer;
 begin 
     writeln;
     writeln('----- Modulo D ----->');
     writeln;
+    write('Ingrese un codigo a verificar la cantidad de productos con id menor: ');
+    readln(cod);
+    cant := GetTotalProductsBelowGivenId(a, cod);
+    writeln;
+    writeln('La cantidad de codigos que existen menores a ', cod, ' es: ', cant);
 end;
 
 // Retornar el monto total entre todos los códigos de productos comprendidos entre dos
