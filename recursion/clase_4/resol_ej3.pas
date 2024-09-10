@@ -311,16 +311,44 @@ begin
     writeln('La cantidad de codigos que existen menores a ', cod, ' es: ', cant);
 end;
 
+
 // Retornar el monto total entre todos los códigos de productos comprendidos entre dos
 // valores recibidos (sin incluir) como parámetros.
 procedure ModuloE(a: arbol);
+    function GetTotales(a: arbol; minId, maxId: integer): real;
+    var total: real;
+    begin 
+        // Caso base, arbol vacio
+        if (a = nil) then GetTotales := 0
+        else begin 
+            // Verifico que cumple la condicion
+            if (a^.dato.id > minId) and (a^.dato.id < maxId) then
+                total := a^.dato.monto_total
+            else total := 0;
+
+            GetTotales := total
+                + GetTotales(a^.HI, minId, maxId)
+                + GetTotales(a^.HD, minId, maxId);
+
+        end;
+    end;
+
+var 
+    minId, maxId: integer;
+    total: real;
 begin 
     writeln;
     writeln('----- Modulo E ----->');
     writeln;
+    write('Ingrese el ID minimo de producto: ');
+    readln(minId);
+    write('Ingrese le ID maximo de producto: ');
+    readln(maxId);
+    total := GetTotales(a, minId, maxId);
+    writeln('El monto total entre los codigos ', minId, ' y ', maxId, ' es: ', total:0:2);
+    writeln;
+
 end;
-
-
 
 
 
