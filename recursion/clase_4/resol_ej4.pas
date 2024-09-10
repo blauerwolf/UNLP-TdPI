@@ -122,6 +122,11 @@ type
 }
 procedure ModuloA(var a1: arbolA; var a2: arbolB);
 
+    procedure ImprimirPrestamo(p: prestamoA);
+    begin 
+        writeln(p.isbn, #9, #9, p.socioId, #9, #9, p.dia, '/', p.mes, '/2021', #9, p.cantDias);
+    end;
+
     procedure LeerPrestamo(var p:prestamoA);
     begin 
         write('ISBN: '); readln(p.isbn);
@@ -132,6 +137,27 @@ procedure ModuloA(var a1: arbolA; var a2: arbolB);
             write('Cantidad de dias: '); readln(p.cantDias);
         end;
         writeln;
+        writeln('-- FIN DE CARGA --');
+    end;
+
+    procedure LeerPrestamoRandom(var p:prestamoA; headers: boolean);
+    begin
+        p.isbn := random(100);
+        if (p.isbn <> 0) then begin 
+            p.socioId := random(500) + 1;
+            p.dia := random(30) + 1;
+            p.mes := random(12) + 1;
+            p.cantDias := random(7) + 1;
+
+            if (headers) then 
+                writeln('ISBN:', #9, 'Socio', #9, 'Fecha', #9, #9, 'Dias prestado');
+
+            ImprimirPrestamo(p);
+        end 
+        else begin 
+            writeln;
+            writeln('-- FIN DE CARGA --');
+        end;
     end;
 
     procedure CargarPrestamoB(var p: prestamoB; orig: prestamoA);
@@ -240,7 +266,9 @@ procedure ModuloA(var a1: arbolA; var a2: arbolB);
         isbn: integer;
     begin 
         // Leo los valores hasta que se cumpla la condicion
-        LeerPrestamo(prest1);
+        //LeerPrestamo(prest1);
+        randomize;
+        LeerPrestamoRandom(prest1, true);
 
         while (prest1.isbn <> 0) do begin
             isbn := prest1.isbn;
@@ -252,7 +280,8 @@ procedure ModuloA(var a1: arbolA; var a2: arbolB);
             // Cargo el segundo árbol
             AddOrUpdateB(a2, isbn, prest2);
             
-            LeerPrestamo(prest1);
+            //LeerPrestamo(prest1);
+            LeerPrestamoRandom(prest1, false);
         end;
     end;
 
@@ -264,11 +293,61 @@ begin
 end;
 
 
+//  Un módulo recursivo que reciba la estructura generada en i. y retorne el ISBN más
+//  grande.
+procedure ModuloB(a1: arbolA);
+    function GetTopISBN(a: arbolA): integer;
+    begin 
+        if (a <> nil) then begin
+            if (a^.HD <> nil) then 
+                GetTopISBN := GetTopISBN(a^.HD)
+            else GetTopISBN := a^.dato.isbn;
+        end
+        else GetTopISBN := -1;
+    end;
+
+var isbn: integer;
+begin 
+    writeln;
+    writeln('----- Modulo B ----->');
+    writeln;
+    isbn := GetTopISBN(a1);
+    writeln('El mayor ISBN es: ', isbn);
+    writeln;
+end;
+
+
+// Un módulo recursivo que reciba la estructura generada en ii. y retorne el ISBN más
+// pequeño.
+procedure ModuloC(a2: arbolB);
+    function GetBottomISBN(a: arbolB): integer;
+    begin 
+        if (a <> nil) then begin
+            if (a^.HI <> nil) then 
+                GetBottomISBN := GetBottomISBN(a^.HD)
+            else GetBottomISBN := a^.isbn;
+        end
+        else GetBottomISBN := -1;
+    end;
+
+var isbn: integer;
+begin 
+    writeln;
+    writeln('----- Modulo C ----->');
+    writeln;
+    isbn := GetBottomISBN(a2);
+    writeln('El menor ISBN es: ', isbn);
+    writeln;
+end;
+
+
 var 
     a1: arbolA;
     a2: arbolB;
 Begin 
     ModuloA(a1, a2);
+    ModuloB(a1);
+    ModuloC(a2);
 
 
 End.
