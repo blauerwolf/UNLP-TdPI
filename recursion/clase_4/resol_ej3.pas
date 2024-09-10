@@ -121,9 +121,7 @@ procedure ModuloA(var a:arbol);
         // Inserta un producto en el árbol si no existe.
         { Agrega un nuevo nodo al árbol de productos o actualiza el nodo }
         procedure InsertOrUpdate(var a: arbol; idProducto: integer; v: venta);
-        var 
-            aux: arbol;
-            ULT: lista;
+        var aux: arbol;
         begin
             // Caso base, árbol vacío.
             if (a = nil) then begin
@@ -135,8 +133,6 @@ procedure ModuloA(var a:arbol);
                 aux^.dato.ventas := nil;     { Inicializo la lista de ventas }
                 aux^.HD := nil;
                 aux^.HI := nil;
-
-                ULT := nil;
                 
                 // Cargo la venta al producto:
                 AgregarAdelante(aux^.dato.ventas, v);
@@ -239,44 +235,48 @@ end;
 
 // Retornar el código de producto con mayor cantidad de unidades vendidas.
 procedure ModuloC(a: arbol);
-    procedure ActualizarMaximo(p: producto; var maxVendidas, maxCod: integer);
+
+    procedure BuscarProductoTopVentas(a: arbol; var maxProd: producto);
     begin 
-        if (p.tot_vendidas > maxVendidas) then begin 
-            maxVendidas := p.tot_vendidas;
-            maxCod := p.id;
+        if (a <> nil) then begin 
+            BuscarProductoTopVentas(a^.HI, maxProd);
+
+            if (a^.dato.tot_vendidas > maxProd.tot_vendidas) then 
+                maxProd := a^.dato;
+
+            BuscarProductoTopVentas(a^.HD, maxProd);
         end;
     end;
-    
-    procedure ImprimirCodigoTopVentas(a: arbol; max: integer);
-    var cod: integer;
+
+    function GetCodProductoTopVentas(a: arbol): integer; 
+    var maxProd: producto; 
     begin 
-        // Caso base: arbol vacio
-        if (a = nil) then 
-          // Devuelvo objeto vacío
+        if (a <> nil) then begin 
+            // Inicializo el producto máximo con el primer nodo del árbol.
+            maxProd := a^.dato;
 
-        else begin
-          // Asumo el máximo con el nodo actual
-          cod := a^.dato.id;
-          max := a^.dato.tot_vendidas;
+            // Llamada recursiva
+            BuscarProductoTopVentas(a, maxProd);
 
-          if (a^.HD <> nil) then
-              ImprimirCodigoTopVentas(a^.HD) ;
-
-          ActualizarMaximo(a^.dato, max, cod);
-
-          if (a^.HI <> nil) then
-              ImprimirCodigoTopVentas(a^.HI);
-
+            // Retorno el cód de producto con más ventas
+            GetCodProductoTopVentas := maxProd.id;
+        end 
+        else begin 
+            // Retorno un valor fuera de rango para saber que el árbol está vacio.
+            GetCodProductoTopVentas := -1;
         end;
-
     end;
 
-
+var maxId: integer;
 begin
+    
     writeln;
     writeln('----- Modulo C ----->');
     writeln;
-    ImprimirCodigoTopVentas(a);
+    maxId := GetCodProductoTopVentas(a);
+    if (maxid <> -1) then
+        writeln('El codigo del producto con mas ventas es: ', maxId)
+    else writeln('El arbol  esta vacio');
 end;
 
 
