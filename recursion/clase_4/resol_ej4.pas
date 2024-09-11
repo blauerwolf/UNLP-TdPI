@@ -119,6 +119,13 @@ type
     end;
 
 
+// Comunes
+function ContarPrestamos(l: lista): integer;
+begin 
+    if (l = nil) then ContarPrestamos := 0
+    else 
+        ContarPrestamos := 1 + ContarPrestamos(l^.sig);
+end;
 
 {
     a. Un módulo que lea préstamos y retorne 2 estructuras de datos con la información de
@@ -487,14 +494,6 @@ end;
 // que se prestó.
 procedure ModuloG(a1: arbolB; var a4: arbolC);
 
-    function ContarPrestamos(l: lista): integer;
-    begin 
-        if (l = nil) then ContarPrestamos := 0
-        else 
-            ContarPrestamos := 1 + ContarPrestamos(l^.sig);
-    end;
-
-
     procedure AddOrUpdateC(var a: arbolC; isbn: integer; total: integer);
     var aux: arbolC;
     begin
@@ -600,14 +599,6 @@ end;
 // módulo debe retornar la cantidad total de préstamos realizados a los ISBN
 // comprendidos entre los dos valores recibidos (incluidos).
 procedure ModuloJ(a: arbolB);
-
-    function ContarPrestamos(l: lista): integer;
-    begin 
-        if (l = nil) then ContarPrestamos := 0
-        else 
-            ContarPrestamos := 1 + ContarPrestamos(l^.sig);
-    end;
-
 
     function GetTotalPrestamos2ISBN_B(a: arbolB; isbn1, isbn2: integer): integer;
     var prestamo: integer;
