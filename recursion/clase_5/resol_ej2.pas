@@ -151,6 +151,33 @@ procedure ModuloA(var a1: arbolPatente; var a2: arbolMarca);
     end;
 
 
+    procedure ImprimirArbolMarca(a: arbolMarca; headers: boolean);
+        procedure ImprimirLista(l: lista; headers: boolean);
+        begin 
+            if (l <> nil) then begin 
+                if (headers) then begin 
+                    writeln('DOMINIO', #9, 'AÑO', #9, 'MODELO');
+                    writeln('--------------------------')
+                end;
+
+                ImprimirLista(l^.sig, false);
+                writeln(l^.dato.patente, #9, l^.dato.fabricacion, #9, l^.dato.modelo);
+                
+            end;
+        end;
+
+
+    begin 
+        if (a <> nil) then begin 
+            ImprimirArbolMarca(a^.HI, false);
+            writeln;
+            writeln('MARCA: ', a^.marca, ' |');
+            ImprimirLista(a^.autos, true);
+            ImprimirArbolMarca(a^.HD, false);
+        end;
+    end;
+
+
     procedure CargarAutoPorPatente(var a: arbolPatente; dato: auto);
     begin 
         if (a = nil) then begin 
@@ -165,10 +192,70 @@ procedure ModuloA(var a1: arbolPatente; var a2: arbolMarca);
     end;
 
 
-    procedure CargarAutoPorMarca(var a: arbolMarca; dato: auto);
-    begin 
+    procedure InsertarOrdenado(var l: lista; dato: auto);
+    var 
+      nue: lista;
+      act, ant: lista;          { Puntaros auxiliares para recorrido }
 
+    begin 
+      { Crear el nodo a insertar }
+      new (nue);
+      nue^.dato.patente := dato.patente;
+      nue^.dato.fabricacion := dato.fabricacion;
+      nue^.dato.modelo := dato.modelo;
+      act := l;                 { Ucibo act y ant al inicio de la lista }
+      ant := l;
+
+      { Buscar la posición para insertar el nodo creado }
+      while (act <> nil) and (dato.patente > act^.dato.patente) do
+      begin 
+        ant := act;
+        act := act^.sig;
+      end;
+
+      if (act = ant) then     { al inicio o lista vacía }
+        l := nue
+      else                    { al medio o al final }
+        ant^.sig := nue;
+
+      nue^.sig := act;
     end;
+
+
+    procedure CargarAutoPorMarca(var a: arbolMarca; dato: auto);
+    var aux: arbolMarca;
+    begin
+        // Caso base, árbol vacío.
+        if (a = nil) then begin
+
+            new(aux);
+            aux^.marca := dato.marca;
+            aux^.autos := nil;     { Inicializo la lista de prestamos }
+            aux^.HD := nil;
+            aux^.HI := nil;
+            
+            // Cargo la venta al producto:
+            //AgregarAdelante(aux^.prestamos, dato);  <- Opcion B de carga
+            InsertarOrdenado(aux^.autos, dato);
+
+            // Actualizo el nodo inicial
+            a := aux;
+        end
+        else begin
+            // Si estoy actualizando un nodo existente 
+            if (a^.marca = dato.marca) then
+                //AgregarAdelante(a^.autos, dato) <- Opcion B de carga
+                InsertarOrdenado(a^.autos, dato)
+
+            else begin 
+                if (a^.marca > dato.marca) then
+                    CargarAutoPorMarca(a^.HI, dato)
+                else
+                    CargarAutoPorMarca(a^.HD, dato);
+            end;
+        end;
+    end;
+
 
     procedure CargarAutos(var a: arbolPatente; var b: arbolMarca);
     var aux: auto;
@@ -176,7 +263,6 @@ procedure ModuloA(var a1: arbolPatente; var a2: arbolMarca);
         GenerarAuto(aux);
         while (aux.marca <> 'MMM') do
         begin
-            //ImprimirAuto(aux);
 
             CargarAutoPorPatente(a, aux);
             CargarAutoPorMarca(b, aux);
@@ -192,6 +278,7 @@ begin
     writeln;
     CargarAutos(a1, a2);
     ImprimirArbolPatente(a1, true);
+    ImprimirArbolMarca(a2, true);
 end;
 
 
