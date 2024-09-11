@@ -55,14 +55,14 @@
 
 
     ARBOLES:
-         -----------------        -------------------       
-        |  arbolA         |      |  arbolB           | 
-        |-----------------|      |-------------------|
-        | dato: prestamoA |      | isbn              |
-        | HI              |      | prestamos = lista |
-        | HD              |      | HI                |
-         =================       | HD                |
-                                  ===================
+         -----------------        -------------------        -----------------       
+        |  arbolA         |      |  arbolB           |      |  arbolC         | 
+        |-----------------|      |-------------------|      |-----------------|
+        | dato: prestamoA |      | isbn              |      | isbn            |
+        | HI              |      | prestamos = lista |      | totalPrestamos  |
+        | HD              |      | HI                |      | HI              |
+         =================       | HD                |      | HD              |
+                                  ===================        =================
 
 
 }
@@ -109,6 +109,16 @@ type
         HI: arbolB;
         HD: arbolB;
     end;
+
+    arbolC = ^nodoC;
+    nodoC = record 
+        isbn: integer;
+        totalPrestamos: integer;
+        HI: arbolC;
+        HD: arbolC;
+    end;
+
+
 
 {
     a. Un módulo que lea préstamos y retorne 2 estructuras de datos con la información de
@@ -368,16 +378,279 @@ begin
     write('Ingrese numero de socio a buscar: ');
     readln(socioId);
     total := GetTotalPrestamos(a1, socioId);
+    writeln('El socio ', socioId, ' posee ', total, ' prestamos.');
+end;
+
+
+// Un módulo recursivo que reciba la estructura generada en ii. y un número de socio. El
+// módulo debe retornar la cantidad de préstamos realizados a dicho socio.
+procedure ModuloE(a: arbolB);
+
+    function SumarPrestamos(l: lista; socioId: integer): integer;
+    var suma: integer;
+    begin 
+        if (l = nil) then SumarPrestamos := 0
+        else begin
+            if (l^.dato.socioId = socioId) 
+            then suma := 1
+            else suma := 0;
+
+            SumarPrestamos := suma + SumarPrestamos(l^.sig, socioId);
+        end;
+    end;
+    
+    function GetTotalPrestamosB(a: arbolB; socioId: integer): integer;
+    var suma: integer;
+    begin 
+        // Caso base: arbol vacio
+        if (a = nil) then GetTotalPrestamosB := 0
+        else begin 
+            suma := SumarPrestamos(a^.prestamos, socioId);
+
+            GetTotalPrestamosB := suma
+                + GetTotalPrestamosB(a^.HI, socioId)
+                + GetTotalPrestamosB(a^.HD, socioId);
+        end;
+    end;
+
+
+var socioId, total: integer;
+begin 
+    writeln;
+    writeln('----- Modulo E ----->');
+    writeln;
+    write('Ingrese numero de socio a buscar: ');
+    readln(socioId);
+    total := GetTotalPrestamosB(a, socioId);
+    writeln('El socio ', socioId, ' posee ', total, ' prestamos.');
+end;
+
+
+
+// Un módulo que reciba la estructura generada en i. y retorne una nueva estructura
+// ordenada ISBN, donde cada ISBN aparezca una vez junto a la cantidad total de veces
+// que se prestó.
+procedure ModuloF(a1: arbolA; var a3: arbolC);
+
+    procedure AddOrUpdateC(var a: arbolC; isbn: integer);
+    var aux: arbolC;
+    begin
+        // Caso base, árbol vacío.
+        if (a = nil) then begin
+
+            new(aux);
+            aux^.isbn := isbn;
+            aux^.totalPrestamos := 1;
+            aux^.HD := nil;
+            aux^.HI := nil;
+
+            // Actualizo el nodo inicial
+            a := aux;
+        end
+        else begin
+            // Si estoy actualizando un nodo existente 
+            if (a^.isbn = isbn) then
+                // Actualizo los valores de totales de préstamo:
+                a^.totalPrestamos := a^.totalPrestamos + 1
+
+            else begin 
+                if (a^.isbn > isbn) then
+                    AddOrUpdateC(a^.HI, isbn)
+                else
+                    AddOrUpdateC(a^.HD, isbn);
+            end;
+        end;
+    end;
+
+
+    procedure CargarArbolC(a1: arbolA; var a3: arbolC);
+    begin 
+        // Caso base: arbol a1 vacio, no hago nada.
+        if (a1 <> nil) then begin
+            AddOrUpdateC(a3, a1^.dato.isbn);
+            CargarArbolC(a1^.HI, a3);
+            CargarArbolC(a1^.HD, a3);
+        end;
+    end;
+
+begin
+    a3 := nil;
+    writeln;
+    writeln('----- Modulo F ----->');
+    writeln;
+    CargarArbolC(a1, a3);
+end;
+
+
+// Un módulo que reciba la estructura generada en ii. y retorne una nueva estructura
+// ordenada ISBN, donde cada ISBN aparezca una vez junto a la cantidad total de veces
+// que se prestó.
+procedure ModuloG(a1: arbolB; var a4: arbolC);
+
+    function ContarPrestamos(l: lista): integer;
+    begin 
+        if (l = nil) then ContarPrestamos := 0
+        else 
+            ContarPrestamos := 1 + ContarPrestamos(l^.sig);
+    end;
+
+
+    procedure AddOrUpdateC(var a: arbolC; isbn: integer; total: integer);
+    var aux: arbolC;
+    begin
+        // Caso base, árbol vacío.
+        if (a = nil) then begin
+
+            new(aux);
+            aux^.isbn := isbn;
+            aux^.totalPrestamos := total;
+            aux^.HD := nil;
+            aux^.HI := nil;
+
+            // Actualizo el nodo inicial
+            a := aux;
+        end
+        else begin
+            if (a^.isbn > isbn) then
+                AddOrUpdateC(a^.HI, isbn, total)
+            else
+                AddOrUpdateC(a^.HD, isbn, total);
+        end;
+    end;
+
+
+    procedure CargarArbolC(a2: arbolB; var a4: arbolC);
+    var totalPrestamos: integer;
+    begin 
+        if (a2 <> nil) then begin 
+            // Obtengo la cantidad de prestamos para ese ISBN
+            totalPrestamos := ContarPrestamos(a2^.prestamos);
+            AddOrUpdateC(a4, a2^.isbn, totalPrestamos);
+            CargarArbolC(a2^.HI, a4);
+            CargarArbolC(a2^.HD, a4);
+        end;
+    end;
+
+begin 
+    a4 := nil;
+    writeln;
+    writeln('----- Modulo G ----->');
+    writeln;
+    CargarArbolC(a1, a4);
+end;
+
+
+// Un módulo recursivo que reciba la estructura generada en g. y muestre su contenido.
+procedure ModuloH(a: arbolC);
+
+    procedure ImprimirArbol(a: arbolC);
+    begin 
+        if (a <> nil) then begin 
+            ImprimirArbol(a^.HI);
+            writeln(a^.isbn, #9, a^.totalPrestamos);
+            ImprimirArbol(a^.HD);
+        end;
+    end;
+
+
+begin 
+    writeln;
+    writeln('----- Modulo H ----->');
+    writeln;
+    writeln('ISBN', #9, 'Total Prestamos');
+    ImprimirArbol(a);
+end;
+
+
+// Un módulo recursivo que reciba la estructura generada en i. y dos valores de ISBN. El
+// módulo debe retornar la cantidad total de préstamos realizados a los ISBN
+procedure ModuloI(a: arbolA);
+
+    function GetTotalPrestamos2ISBN(a: arbolA; isbn1, isbn2: integer): integer;
+    var prestamo: integer;
+    begin 
+        if (a = nil) then GetTotalPrestamos2ISBN := 0
+        else begin 
+            if (a^.dato.isbn = isbn1) or (a^.dato.isbn = isbn2) 
+            then prestamo := 1
+            else prestamo := 0;
+
+            GetTotalPrestamos2ISBN := prestamo
+                + GetTotalPrestamos2ISBN(a^.HI, isbn1, isbn2)
+                + GetTotalPrestamos2ISBN(a^.HD, isbn1, isbn2);
+        end;
+    end;
+
+
+var isbn1, isbn2, total: integer;
+begin 
+    writeln;
+    writeln('----- Modulo I ----->');
+    writeln;
+    write('Ingrese el primer ISBN: ');
+    readln(isbn1);
+    write('Ingrese el segundo ISBN: ');
+    readln(isbn2);
+    total := GetTotalPrestamos2ISBN(a, isbn1, isbn2);
+    writeln('El total de prestamos a los ISBN ', isbn1, ' y ', isbn2, ' es: ', total);
+end;
+
+
+// Un módulo recursivo que reciba la estructura generada en ii. y dos valores de ISBN. El
+// módulo debe retornar la cantidad total de préstamos realizados a los ISBN
+// comprendidos entre los dos valores recibidos (incluidos).
+procedure ModuloJ(a: arbolB);
+
+    function ContarPrestamos(l: lista): integer;
+    begin 
+        if (l = nil) then ContarPrestamos := 0
+        else 
+            ContarPrestamos := 1 + ContarPrestamos(l^.sig);
+    end;
+
+
+    function GetTotalPrestamos2ISBN_B(a: arbolB; isbn1, isbn2: integer): integer;
+    var prestamo: integer;
+    begin 
+        if (a = nil) then GetTotalPrestamos2ISBN_B := 0
+        else begin 
+            if (a^.isbn = isbn1) or (a^.isbn = isbn2)
+            then prestamo := ContarPrestamos(a^.prestamos)
+            else prestamo := 0;
+
+            GetTotalPrestamos2ISBN_B := prestamo 
+                + GetTotalPrestamos2ISBN_B(a^.HI, isbn1, isbn2)
+                + GetTotalPrestamos2ISBN_B(a^.HD, isbn1, isbn2);
+        end;
+    end;
+
+var isbn1, isbn2, total: integer;
+begin 
+    writeln;
+    writeln('----- Modulo J ----->');
+    writeln;
+    write('Ingrese el primer ISBN: ');
+    readln(isbn1);
+    write('Ingrese el segundo ISBN: ');
+    readln(isbn2);
+    total := GetTotalPrestamos2ISBN_B(a, isbn1, isbn2);
+    writeln('El total de prestamos a los ISBN ', isbn1, ' y ', isbn2, ' es: ', total);
 end;
 
 var 
     a1: arbolA;
     a2: arbolB;
+    a3, a4: arbolC;
+    
 Begin 
     ModuloA(a1, a2);
     ModuloB(a1);
     ModuloC(a2);
     ModuloD(a1);
-
-
+    ModuloE(a2);
+    ModuloF(a1, a3);
+    ModuloG(a2, a4);
+    ModuloH(a4);
+    ModuloI(a1);
+    ModuloJ(a2);
 End.
