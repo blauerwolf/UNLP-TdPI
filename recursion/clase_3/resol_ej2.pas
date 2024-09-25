@@ -16,7 +16,7 @@
   total de productos vendidos en la fecha recibida.
   ✅ c. Implemente un módulo que reciba el árbol generado en ii. y retorne el código de producto
   con mayor cantidad total de unidades vendidas.
-  d. Implemente un módulo que reciba el árbol generado en iii. y retorne el código de producto
+  ✅ d. Implemente un módulo que reciba el árbol generado en iii. y retorne el código de producto
   con mayor cantidad de ventas.
 }
 
