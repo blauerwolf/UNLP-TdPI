@@ -7,3 +7,26 @@
 !*.pas
 !*/
 !objetos/
+
+# Permitir archivos fuente de Java
+!*.java
+
+# Ignorar archivos y carpetas típicos de proyectos de Java
+*.class
+*.jar
+*.war
+*.ear
+
+# Ignorar carpetas de compilación de Java
+/bin/
+/build/
+out/
+
+# Ignorar archivos específicos de Eclipse/IntelliJ
+*.iml
+*.ipr
+*.iws
+/.idea/
+/.project
+/.settings/
+/target/
