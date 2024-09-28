@@ -290,6 +290,7 @@ end;
 
 var 
     a: arbol;
+    
 Begin 
     ModuloA(a);
     ModuloB(a);
